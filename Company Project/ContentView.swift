@@ -48,6 +48,7 @@ var combinedData: [Data] = []
 var chartDomain = 25
 var chartRange = 10
 var heightMultiplier = 0.25
+var developerMode = false
 
 func firstData() {
     data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1))))
@@ -86,15 +87,23 @@ struct ContentView: View {
     
     
     var body: some View {
-        
-        refreshData()
         return VStack {
             
-            Button("Pause", action: {stopTimer()})
-            Button("Resume", action: {startTimer()})
-            Button("Reset", action: {reset()})
+            Button("Toggle Developer Mode", action: {developerMode = !developerMode
+                startTimer()
+                index += 1
+                index -= 1})
+            HStack{
+                Button("Pause", action: {stopTimer()})
+                    .opacity(developerMode ? 1 : 0)
+                Button("Resume", action: {startTimer()})
+                    .opacity(developerMode ? 1 : 0)
+                Button("Reset", action: {reset()})
+                    .opacity(developerMode ? 1 : 0)
+            }
             
-            Text("\nTicks Elapsed: \(index)")                .onReceive(timer) {time in
+            Text("Ticks Elapsed: \(index)")                .onReceive(timer) {time in
+                    refreshData()
                     index += 1
                 }
             
@@ -164,13 +173,15 @@ struct ContentView: View {
         if paused {
             timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
             paused = false
-            index += 1
         }
     }
     func reset() {
         index = 0
         stopTimer()
         data = []
+        refreshData()
+        index += 1
+        index -= 1
     }
 }
 
