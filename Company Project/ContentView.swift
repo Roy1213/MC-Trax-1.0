@@ -24,7 +24,8 @@ struct Data: Identifiable {
 var data: [Data] = []
 
 func refreshData() {
-    data.append(Data(hours: 4, minutes: data.count, output: Double(Int.random(in:1..<20))))
+    let range =
+    data.append(Data(hours: 4, minutes: data.count, output: Double.random(in:data[data.count - 1].output..<20)))
 }
 
 var paused = false
