@@ -40,9 +40,10 @@ struct Data: Identifiable {
     }
 }
 
-var data:  [Data] = []
-var data2: [Data] = []
-var data3: [Data] = []
+var data:         [Data] = []
+var data2:        [Data] = []
+var data3:        [Data] = []
+var combinedData: [Data] = []
 
 var chartDomain = 25
 var chartRange = 10
@@ -60,8 +61,8 @@ func refreshData() {
         firstData()
     }
     let range = 1.0
-    let rangeBottom = data[data.count - 1].output - range/2
-    let rangeTop = data[data.count - 1].output + range/2
+    let rangeBottom = data[0].output - range/2
+    let rangeTop = data[0].output + range/2
     data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop)))
     if data.count >= chartDomain {
         data.remove(at: 0)
@@ -70,10 +71,10 @@ func refreshData() {
         }
     }
     
-    data2 = data.map {Data(name: "SecondData", minutes: $0.minutes, output: Double(chartRange) - $0.output)}
-    data3 = data.map {Data(name: "ThirdData", minutes: $0.minutes, output: $0.output - Double(chartRange) * 0.25)}
+    data2 = data.map {Data(name: "Second Data", minutes: $0.minutes, output: Double(chartRange) - $0.output)}
+    data3 = data.map {Data(name: "Third Data", minutes: $0.minutes, output: $0.output - Double(chartRange) * 0.25)}
     
-    
+    combinedData = data + data2 + data3
 }
 
 var paused = false
@@ -88,15 +89,17 @@ struct ContentView: View {
         
         refreshData()
         return VStack {
-            Text("\(index)")
-                .onReceive(timer) {time in
-                    index += 1
-                }
+            
             Button("Pause", action: {stopTimer()})
             Button("Resume", action: {startTimer()})
             Button("Reset", action: {reset()})
             
+            Text("\nTicks Elapsed: \(index)")                .onReceive(timer) {time in
+                    index += 1
+                }
+            
             ScrollView {
+                Text("\nFirst Data")
                 Chart(data) {
                     LineMark(
                         x: .value("Minutes", $0.minutes),
@@ -107,6 +110,7 @@ struct ContentView: View {
                 .chartYScale(domain: 0...chartRange)
                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                 
+                Text("\nSecond Data")
                 Chart(data2) {
                     LineMark(
                         x: .value("Minutes", $0.minutes),
@@ -118,7 +122,34 @@ struct ContentView: View {
                 .foregroundStyle(Color(.green))
                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                 
+                Text("\nThird Data")
+                Chart(data3) {
+                    LineMark(
+                        x: .value("Minutes", $0.minutes),
+                        y: .value("Output", $0.output)
+                    )
+                }
+                .chartXScale(domain: 0...chartDomain - 1)
+                .chartYScale(domain: 0...chartRange)
+                .foregroundStyle(Color(.red))
+                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                
+                Text("\nCombined Data")
+                Chart(combinedData) {
+                    LineMark(
+                        x: .value("Minutes", $0.minutes),
+                        y: .value("Output", $0.output),
+                        series: .value("Data Name", $0.name)
+                    )
+                    .foregroundStyle(by: .value("Data Name", $0.name))
+                }
+                .chartXScale(domain: 0...chartDomain - 1)
+                .chartYScale(domain: 0...chartRange)
+                .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
+                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                
             }
+            .padding()
         }
         .padding()
         .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
@@ -133,6 +164,7 @@ struct ContentView: View {
         if paused {
             timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
             paused = false
+            index += 1
         }
     }
     func reset() {
