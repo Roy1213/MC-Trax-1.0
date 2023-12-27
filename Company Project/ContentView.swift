@@ -49,6 +49,11 @@ var chartDomain = 25
 var chartRange = 10
 var heightMultiplier = 0.25
 var developerMode = false
+var paused = false
+var buttonEngaged = false
+var buttonDowntime = false
+var downtimeStart = -1
+var downtimeWait = 5
 
 func firstData() {
     data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1))))
@@ -61,7 +66,7 @@ func refreshData() {
     if data.count == 0 {
         firstData()
     }
-    let range = 1.0
+    
     let rangeBottom = 0.4 * Double(chartRange)
     let rangeTop = 0.6 * Double(chartRange)
     
@@ -99,9 +104,6 @@ func refreshData() {
     combinedData = data + data2 + data3
 }
 
-var paused = false
-var buttonEngaged = false
-
 struct ContentView: View {
     var frequency = 1
     @State var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -124,13 +126,19 @@ struct ContentView: View {
                     .opacity(developerMode ? 1 : 0)
             }
             
-            Text("Ticks Elapsed: \(index)")                .onReceive(timer) {time in
+            Text("Ticks Elapsed: \(index)")                
+                .onReceive(timer) {time in
                     refreshData()
                     index += 1
+                    if (index >= downtimeStart + downtimeWait) {
+                        buttonDowntime = false
+                    }
                 }
             Button(action: {buttonEngaged = !buttonEngaged
                 index += 1
-                index -= 1}) {
+                index -= 1
+                buttonDowntime = true
+                downtimeStart = index}) {
                     Text(buttonEngaged ? "Shut Down" : "Turn On")
                         
                         .frame(width: 150, height: 150)
@@ -138,6 +146,8 @@ struct ContentView: View {
                         .background(Circle().fill(buttonEngaged ? Color.green : Color.red))
                 }
                 .buttonStyle(PlainButtonStyle())
+                .disabled(buttonDowntime)
+                
                 
                 
 
