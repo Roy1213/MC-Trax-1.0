@@ -40,86 +40,35 @@ struct Data: Identifiable {
     }
 }
 
-var data:         [Data] = []
-var data2:        [Data] = []
-var data3:        [Data] = []
-var combinedData: [Data] = []
-
-var chartDomain = 25
-var chartRange = 10
-var heightMultiplier = 0.25
-var developerMode = false
-var paused = false
-var buttonEngaged = false
-var buttonDowntime = false
-var downtimeStart = -1
-var downtimeWait = 5
-var lightMode = false
-
-func firstData() {
-    data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1))))
-    for _ in 1...chartDomain - 1 {
-        refreshData()
-    }
-}
-
-func refreshData() {
-    if data.count == 0 {
-        firstData()
-    }
-    
-    let rangeBottom = 0.4 * Double(chartRange)
-    let rangeTop = 0.6 * Double(chartRange)
-    
-    data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop)))
-    if data.count >= chartDomain {
-        data.remove(at: 0)
-        for i in 0..<data.count {
-            data[i].minutes -= 1
-        }
-    }
-    
-    data2.append(Data(name: "Second Data", minutes: data2.count, output: Double.random(in:rangeBottom..<rangeTop)))
-    if data2.count >= chartDomain {
-        data2.remove(at: 0)
-        for i in 0..<data2.count {
-            data2[i].minutes -= 1
-        }
-    }
-    
-    data3.append(Data(name: "Third Data", minutes: data3.count, output: Double.random(in:rangeBottom..<rangeTop) - 0.25 * Double(chartRange)))
-    if data3.count >= chartDomain {
-        data3.remove(at: 0)
-        for i in 0..<data3.count {
-            data3[i].minutes -= 1
-        }
-    }
-    
-    
-    if (!buttonEngaged) {
-        data[data.count - 1].output *= 0.1
-        data2[data2.count - 1].output *= 0.1
-        data3[data2.count - 1].output *= 0.1
-    }
-    
-    combinedData = data + data2 + data3
-}
-
 struct ContentView: View {
-    var frequency = 1
-    @State var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State var index = 0
+    @State var data:         [Data] = []
+    @State var data2:        [Data] = []
+    @State var data3:        [Data] = []
+    @State var combinedData: [Data] = []
+
+    @State var chartDomain = 25
+    @State var chartRange = 10
+    @State var heightMultiplier = 0.25
+    @State var developerMode = false
+    @State var paused = false
+    @State var buttonEngaged = false
+    @State var buttonDowntime = false
+    @State var downtimeStart = -1
+    @State var downtimeWait = 5
+    @State var lightMode = false
+    @State private var frequency = 1
+    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var index = 0
+    @State private var expanded = false
+    @State private var rotationAngle = -30
+    @State private var scalingEffect = 0.7
     
     
     var body: some View {
         return VStack {
-            Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {lightMode = !lightMode
-                index += 1
-                index -= 1})
+            Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {lightMode = !lightMode})
             Button("Toggle Developer Mode", action: {developerMode = !developerMode
-                startTimer()
-                index += 1
-                index -= 1})
+                startTimer()})
             HStack{
                 Button("Pause", action: {stopTimer()})
                     .opacity(developerMode ? 1 : 0)
@@ -133,13 +82,12 @@ struct ContentView: View {
                 .onReceive(timer) {time in
                     refreshData()
                     index += 1
+                    
                     if (index >= downtimeStart + downtimeWait) {
                         buttonDowntime = false
                     }
                 }
             Button(action: {buttonEngaged = !buttonEngaged
-                index += 1
-                index -= 1
                 buttonDowntime = true
                 downtimeStart = index}) {
                     Text(buttonEngaged ? "Shut Down" : "Turn On")
@@ -150,71 +98,110 @@ struct ContentView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .disabled(buttonDowntime)
-                
-                
-                
-
-                //.clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                
             
-            ScrollView {
-                Text("\nFirst Data")
-                Chart(data) {
-                    LineMark(
-                        x: .value("Minutes", $0.minutes),
-                        y: .value("Output", $0.output)
-                    )
-                }
-                .chartXScale(domain: 0...chartDomain - 1)
-                .chartYScale(domain: 0...chartRange)
-                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+            Button(expanded ? "Condense" : "Expand", action: {expanded = !expanded})
                 
-                Text("\nSecond Data")
-                Chart(data2) {
-                    LineMark(
-                        x: .value("Minutes", $0.minutes),
-                        y: .value("Output", $0.output)
-                    )
+            if expanded {
+                VStack {
+                    ScrollView {
+                        VStack {
+                            Text("\nFirst Data")
+                            Chart(data) {
+                                LineMark(
+                                    x: .value("Minutes", $0.minutes),
+                                    y: .value("Output", $0.output)
+                                )
+                            }
+                            .chartXScale(domain: 0...chartDomain - 1)
+                            .chartYScale(domain: 0...chartRange)
+                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                        }
+                        .containerRelativeFrame(.vertical)
+                        .scrollTransition(axis: .vertical) {
+                            content, phase in
+                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                        }
+                        
+                        
+                        VStack {
+                            Text("\nSecond Data")
+                            Chart(data2) {
+                                LineMark(
+                                    x: .value("Minutes", $0.minutes),
+                                    y: .value("Output", $0.output)
+                                )
+                            }
+                            .chartXScale(domain: 0...chartDomain - 1)
+                            .chartYScale(domain: 0...chartRange)
+                            .foregroundStyle(Color(.green))
+                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                        }
+                        .containerRelativeFrame(.vertical)
+                        .scrollTransition(axis: .vertical) {
+                            content, phase in
+                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                        }
+                        
+                        VStack {
+                            Text("\nThird Data")
+                            Chart(data3) {
+                                LineMark(
+                                    x: .value("Minutes", $0.minutes),
+                                    y: .value("Output", $0.output)
+                                )
+                            }
+                            .chartXScale(domain: 0...chartDomain - 1)
+                            .chartYScale(domain: 0...chartRange)
+                            .foregroundStyle(Color(.red))
+                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                        }
+                        .containerRelativeFrame(.vertical)
+                        .scrollTransition(axis: .vertical) {
+                            content, phase in
+                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                        }
+                        
+                        VStack {
+                            Text("\nCombined Data")
+                            Chart(combinedData) {
+                                LineMark(
+                                    x: .value("Minutes", $0.minutes),
+                                    y: .value("Output", $0.output),
+                                    series: .value("Data Name", $0.name)
+                                )
+                                .foregroundStyle(by: .value("Data Name", $0.name))
+                            }
+                            .chartXScale(domain: 0...chartDomain - 1)
+                            .chartYScale(domain: 0...chartRange)
+                            .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
+                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                        }
+                        .containerRelativeFrame(.vertical)
+                        .scrollTransition(axis: .vertical) {
+                            content, phase in
+                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                        }
+                        
+                    }
+                    .padding()
+                    .contentMargins(20)
+                    .animation(.linear, value: index)
                 }
-                .chartXScale(domain: 0...chartDomain - 1)
-                .chartYScale(domain: 0...chartRange)
-                .foregroundStyle(Color(.green))
-                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                
-                Text("\nThird Data")
-                Chart(data3) {
-                    LineMark(
-                        x: .value("Minutes", $0.minutes),
-                        y: .value("Output", $0.output)
-                    )
-                }
-                .chartXScale(domain: 0...chartDomain - 1)
-                .chartYScale(domain: 0...chartRange)
-                .foregroundStyle(Color(.red))
-                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                
-                Text("\nCombined Data")
-                Chart(combinedData) {
-                    LineMark(
-                        x: .value("Minutes", $0.minutes),
-                        y: .value("Output", $0.output),
-                        series: .value("Data Name", $0.name)
-                    )
-                    .foregroundStyle(by: .value("Data Name", $0.name))
-                }
-                .chartXScale(domain: 0...chartDomain - 1)
-                .chartYScale(domain: 0...chartRange)
-                .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
-                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                 
             }
-            .padding()
-            .preferredColorScheme(lightMode ? .light : .dark)
         }
         .padding()
+        .preferredColorScheme(lightMode ? .light : .dark)
+        .background(LinearGradient(colors: [.black, .gray], startPoint: .bottom, endPoint: .top))
+        
         
         
     }
+    
     
     func stopTimer() {
         timer.upstream.connect().cancel()
@@ -231,9 +218,57 @@ struct ContentView: View {
         stopTimer()
         data = []
         refreshData()
-        index += 1
-        index -= 1
     }
+    
+    func firstData() {
+        data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1))))
+        for _ in 1...chartDomain - 1 {
+            refreshData()
+        }
+    }
+
+    func refreshData() {
+        if data.count == 0 {
+            firstData()
+        }
+        
+        let rangeBottom = 0.4 * Double(chartRange)
+        let rangeTop = 0.6 * Double(chartRange)
+        
+        data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop)))
+        if data.count >= chartDomain {
+            data.remove(at: 0)
+            for i in 0..<data.count {
+                data[i].minutes -= 1
+            }
+        }
+        
+        data2.append(Data(name: "Second Data", minutes: data2.count, output: Double.random(in:rangeBottom..<rangeTop)))
+        if data2.count >= chartDomain {
+            data2.remove(at: 0)
+            for i in 0..<data2.count {
+                data2[i].minutes -= 1
+            }
+        }
+        
+        data3.append(Data(name: "Third Data", minutes: data3.count, output: Double.random(in:rangeBottom..<rangeTop) - 0.25 * Double(chartRange)))
+        if data3.count >= chartDomain {
+            data3.remove(at: 0)
+            for i in 0..<data3.count {
+                data3[i].minutes -= 1
+            }
+        }
+        
+        
+        if (!buttonEngaged) {
+            data[data.count - 1].output *= 0.1
+            data2[data2.count - 1].output *= 0.1
+            data3[data2.count - 1].output *= 0.1
+        }
+        
+        combinedData = data + data2 + data3
+    }
+
 }
 
 #Preview {
