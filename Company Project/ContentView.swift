@@ -54,6 +54,7 @@ var buttonEngaged = false
 var buttonDowntime = false
 var downtimeStart = -1
 var downtimeWait = 5
+var lightMode = false
 
 func firstData() {
     data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1))))
@@ -112,7 +113,9 @@ struct ContentView: View {
     
     var body: some View {
         return VStack {
-            
+            Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {lightMode = !lightMode
+                index += 1
+                index -= 1})
             Button("Toggle Developer Mode", action: {developerMode = !developerMode
                 startTimer()
                 index += 1
@@ -206,9 +209,10 @@ struct ContentView: View {
                 
             }
             .padding()
+            .preferredColorScheme(lightMode ? .light : .dark)
         }
         .padding()
-        .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
+        
         
     }
     
