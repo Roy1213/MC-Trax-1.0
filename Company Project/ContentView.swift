@@ -62,8 +62,9 @@ func refreshData() {
         firstData()
     }
     let range = 1.0
-    let rangeBottom = data[0].output - range/2
-    let rangeTop = data[0].output + range/2
+    let rangeBottom = 0.4 * Double(chartRange)
+    let rangeTop = 0.6 * Double(chartRange)
+    
     data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop)))
     if data.count >= chartDomain {
         data.remove(at: 0)
@@ -72,13 +73,34 @@ func refreshData() {
         }
     }
     
-    data2 = data.map {Data(name: "Second Data", minutes: $0.minutes, output: Double(chartRange) - $0.output)}
-    data3 = data.map {Data(name: "Third Data", minutes: $0.minutes, output: $0.output - Double(chartRange) * 0.25)}
+    data2.append(Data(name: "Second Data", minutes: data2.count, output: Double.random(in:rangeBottom..<rangeTop)))
+    if data2.count >= chartDomain {
+        data2.remove(at: 0)
+        for i in 0..<data2.count {
+            data2[i].minutes -= 1
+        }
+    }
+    
+    data3.append(Data(name: "Third Data", minutes: data3.count, output: Double.random(in:rangeBottom..<rangeTop) - 0.25 * Double(chartRange)))
+    if data3.count >= chartDomain {
+        data3.remove(at: 0)
+        for i in 0..<data3.count {
+            data3[i].minutes -= 1
+        }
+    }
+    
+    
+    if (!buttonEngaged) {
+        data[data.count - 1].output *= 0.1
+        data2[data2.count - 1].output *= 0.1
+        data3[data2.count - 1].output *= 0.1
+    }
     
     combinedData = data + data2 + data3
 }
 
 var paused = false
+var buttonEngaged = false
 
 struct ContentView: View {
     var frequency = 1
@@ -106,6 +128,21 @@ struct ContentView: View {
                     refreshData()
                     index += 1
                 }
+            Button(action: {buttonEngaged = !buttonEngaged
+                index += 1
+                index -= 1}) {
+                    Text(buttonEngaged ? "Shut Down" : "Turn On")
+                        
+                        .frame(width: 150, height: 150)
+                        .font(.title)
+                        .background(Circle().fill(buttonEngaged ? Color.green : Color.red))
+                }
+                .buttonStyle(PlainButtonStyle())
+                
+                
+
+                //.clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
+                
             
             ScrollView {
                 Text("\nFirst Data")
