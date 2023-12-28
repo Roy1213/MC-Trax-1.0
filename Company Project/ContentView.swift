@@ -45,7 +45,7 @@ struct ContentView: View {
     @State var data2:        [Data] = []
     @State var data3:        [Data] = []
     @State var combinedData: [Data] = []
-
+    
     @State var chartDomain = 25
     @State var chartRange = 10
     @State var heightMultiplier = 0.25
@@ -78,7 +78,7 @@ struct ContentView: View {
                     .opacity(developerMode ? 1 : 0)
             }
             
-            Text("Ticks Elapsed: \(index)")                
+            Text("Ticks Elapsed: \(index)")
                 .onReceive(timer) {time in
                     refreshData()
                     index += 1
@@ -91,7 +91,7 @@ struct ContentView: View {
                 buttonDowntime = true
                 downtimeStart = index}) {
                     Text(buttonEngaged ? "Shut Down" : "Turn On")
-                        
+                    
                         .frame(width: 150, height: 150)
                         .font(.title)
                         .background(Circle().fill(buttonEngaged ? Color.green : Color.red))
@@ -99,104 +99,111 @@ struct ContentView: View {
                 .buttonStyle(PlainButtonStyle())
                 .disabled(buttonDowntime)
             
-            Button(expanded ? "Condense" : "Expand", action: {expanded = !expanded})
-                
-            if expanded {
-                VStack {
-                    ScrollView {
-                        VStack {
-                            Text("\nFirst Data")
-                            Chart(data) {
-                                LineMark(
-                                    x: .value("Minutes", $0.minutes),
-                                    y: .value("Output", $0.output)
-                                )
-                            }
-                            .chartXScale(domain: 0...chartDomain - 1)
-                            .chartYScale(domain: 0...chartRange)
-                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                        }
-                        .containerRelativeFrame(.vertical)
-                        .scrollTransition(axis: .vertical) {
-                            content, phase in
-                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
-                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
-                        }
-                        
-                        
-                        VStack {
-                            Text("\nSecond Data")
-                            Chart(data2) {
-                                LineMark(
-                                    x: .value("Minutes", $0.minutes),
-                                    y: .value("Output", $0.output)
-                                )
-                            }
-                            .chartXScale(domain: 0...chartDomain - 1)
-                            .chartYScale(domain: 0...chartRange)
-                            .foregroundStyle(Color(.green))
-                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                        }
-                        .containerRelativeFrame(.vertical)
-                        .scrollTransition(axis: .vertical) {
-                            content, phase in
-                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
-                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
-                        }
-                        
-                        VStack {
-                            Text("\nThird Data")
-                            Chart(data3) {
-                                LineMark(
-                                    x: .value("Minutes", $0.minutes),
-                                    y: .value("Output", $0.output)
-                                )
-                            }
-                            .chartXScale(domain: 0...chartDomain - 1)
-                            .chartYScale(domain: 0...chartRange)
-                            .foregroundStyle(Color(.red))
-                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                        }
-                        .containerRelativeFrame(.vertical)
-                        .scrollTransition(axis: .vertical) {
-                            content, phase in
-                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
-                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
-                        }
-                        
-                        VStack {
-                            Text("\nCombined Data")
-                            Chart(combinedData) {
-                                LineMark(
-                                    x: .value("Minutes", $0.minutes),
-                                    y: .value("Output", $0.output),
-                                    series: .value("Data Name", $0.name)
-                                )
-                                .foregroundStyle(by: .value("Data Name", $0.name))
-                            }
-                            .chartXScale(domain: 0...chartDomain - 1)
-                            .chartYScale(domain: 0...chartRange)
-                            .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
-                            .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                        }
-                        .containerRelativeFrame(.vertical)
-                        .scrollTransition(axis: .vertical) {
-                            content, phase in
-                            content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
-                                .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
-                        }
-                        
-                    }
-                    .padding()
-                    .contentMargins(20)
-                    .animation(.linear, value: index)
+            Button(expanded ? "Hide Charts" : "Show Charts", action: {
+                withAnimation(.easeIn) {
+                    expanded = !expanded
                 }
-                
+            })
+            
+            
+            VStack {
+                ScrollView {
+                    VStack {
+                        Text("\nFirst Data")
+                        Chart(data) {
+                            LineMark(
+                                x: .value("Minutes", $0.minutes),
+                                y: .value("Output", $0.output)
+                            )
+                        }
+                        .chartXScale(domain: 0...chartDomain - 1)
+                        .chartYScale(domain: 0...chartRange)
+                        .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                    }
+                    .containerRelativeFrame(.vertical)
+                    .scrollTransition(axis: .vertical) {
+                        content, phase in
+                        content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                            .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                    }
+                    
+                    
+                    VStack {
+                        Text("\nSecond Data")
+                        Chart(data2) {
+                            LineMark(
+                                x: .value("Minutes", $0.minutes),
+                                y: .value("Output", $0.output)
+                            )
+                        }
+                        .chartXScale(domain: 0...chartDomain - 1)
+                        .chartYScale(domain: 0...chartRange)
+                        .foregroundStyle(Color(.green))
+                        .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                    }
+                    .containerRelativeFrame(.vertical)
+                    .scrollTransition(axis: .vertical) {
+                        content, phase in
+                        content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                            .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                    }
+                    
+                    VStack {
+                        Text("\nThird Data")
+                        Chart(data3) {
+                            LineMark(
+                                x: .value("Minutes", $0.minutes),
+                                y: .value("Output", $0.output)
+                            )
+                        }
+                        .chartXScale(domain: 0...chartDomain - 1)
+                        .chartYScale(domain: 0...chartRange)
+                        .foregroundStyle(Color(.red))
+                        .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                    }
+                    .containerRelativeFrame(.vertical)
+                    .scrollTransition(axis: .vertical) {
+                        content, phase in
+                        content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                            .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                    }
+                    
+                    VStack {
+                        Text("\nCombined Data")
+                        Chart(combinedData) {
+                            LineMark(
+                                x: .value("Minutes", $0.minutes),
+                                y: .value("Output", $0.output),
+                                series: .value("Data Name", $0.name)
+                            )
+                            .foregroundStyle(by: .value("Data Name", $0.name))
+                        }
+                        .chartXScale(domain: 0...chartDomain - 1)
+                        .chartYScale(domain: 0...chartRange)
+                        .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
+                        .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                    }
+                    .containerRelativeFrame(.vertical)
+                    .scrollTransition(axis: .vertical) {
+                        content, phase in
+                        content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
+                            .scaleEffect(CGSize(width: phase.isIdentity ? 1 : scalingEffect, height: phase.isIdentity ? 1 : scalingEffect))
+                    }
+                    
+                }
+                .padding()
+                .contentMargins(20)
             }
+            .frame(width: UIWindow.current?.screen.bounds.width, height: expanded ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+            .clipShape(Rectangle())
+            .animation(.smooth, value: index)
+            
         }
+        .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height, alignment: .leading)
         .padding()
         .preferredColorScheme(lightMode ? .light : .dark)
-        .background(LinearGradient(colors: [.black, .gray], startPoint: .bottom, endPoint: .top))
+        //.background(LinearGradient(colors: [.black, .black], startPoint: .bottom, endPoint: .top))
+        
         
         
         
@@ -226,7 +233,7 @@ struct ContentView: View {
             refreshData()
         }
     }
-
+    
     func refreshData() {
         if data.count == 0 {
             firstData()
@@ -268,7 +275,7 @@ struct ContentView: View {
         
         combinedData = data + data2 + data3
     }
-
+    
 }
 
 #Preview {
