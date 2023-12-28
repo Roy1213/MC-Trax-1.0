@@ -72,7 +72,7 @@ struct ContentView: View {
             ScrollView {
                 VStack{
                     Button(action: {
-                        withAnimation(.smooth) {
+                        withAnimation(.easeIn) {
                             expanded2 = !expanded2
                         }
                     })
@@ -252,7 +252,7 @@ struct ContentView: View {
                         }
                     })
                     {
-                        Text(expanded3 ? "Hide Information" : "Show Information")
+                        Text(expanded3 ? "Hide Additional Information" : "Show Additional Information")
                             .bold()
                             .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
@@ -263,6 +263,11 @@ struct ContentView: View {
                     
                     VStack {
                         ScrollView {
+                            Text("Part Number: 123456789")
+                            Text("Product Name: Fusion Series")
+                            Text("")
+                            Link("\nMathews Company Phone Number\n(815) 459-2210", destination: URL(string: "tel:8154592210")!)
+                            Link("\nMathews Company Website\n(Click Here For More Info)", destination: URL(string: "https://www.mathewscompany.com/contact-us.html")!)
                             
                         }
                         .padding()
@@ -284,13 +289,6 @@ struct ContentView: View {
         .padding()
         .preferredColorScheme(lightMode ? .light : .dark)
         .background(LinearGradient(colors: [.blue, .purple], startPoint: .bottom, endPoint: .top))
-        
-        
-        
-        
-        
-        
-        
     }
     
     
