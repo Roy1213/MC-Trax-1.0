@@ -61,6 +61,8 @@ struct ContentView: View {
     @State private var expanded         = false
     @State private var expanded2        = false
     @State private var expanded3        = false
+    @State private var expanded4        = false
+    @State private var expanded5        = false
     @State private var rotationAngle    = -30
     @State private var scalingEffect    = 0.7
     @State private var timer            = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -77,10 +79,11 @@ struct ContentView: View {
                         }
                     })
                     {
-                        Text(expanded2 ? "Hide Controls" : "Show Controls")
+                        Text("Controls")
                             .bold()
                             .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
+                            .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
                     
@@ -113,6 +116,7 @@ struct ContentView: View {
                                         buttonDowntime = false
                                     }
                                 }
+                                .foregroundStyle(lightMode ? .black : .white)
                             Button(action: {buttonEngaged = !buttonEngaged
                                 buttonDowntime = true
                                 downtimeStart = index}) {
@@ -121,6 +125,7 @@ struct ContentView: View {
                                         .frame(width: ((UIWindow.current?.screen.bounds.height)! * 0.2), height:  ((UIWindow.current?.screen.bounds.height)! * 0.2))
                                         .font(.title)
                                         .background(Circle().fill(buttonEngaged ? Color.green : Color.red))
+                                        .foregroundStyle(lightMode ? .black : .white)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .disabled(buttonDowntime)
@@ -131,7 +136,6 @@ struct ContentView: View {
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded2 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
-                    .animation(.smooth, value: index)
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
                 
@@ -142,12 +146,15 @@ struct ContentView: View {
                         }
                     })
                     {
-                        Text(expanded ? "Hide Charts" : "Show Charts")
+                        Text("Charts")
                             .bold()
                             .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
+                            .foregroundStyle(lightMode ? .black : .white)
+                            
                     }
                     .buttonStyle(PlainButtonStyle())
+                    
                     
                     
                     
@@ -155,15 +162,34 @@ struct ContentView: View {
                         ScrollView {
                             VStack {
                                 Text("\nFirst Data")
+                                    .foregroundStyle(lightMode ? .black : .white)
                                 Chart(data) {
                                     LineMark(
                                         x: .value("Minutes", $0.minutes),
                                         y: .value("Output", $0.output)
                                     )
                                 }
+                                
                                 .chartXScale(domain: 0...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -175,6 +201,7 @@ struct ContentView: View {
                             
                             VStack {
                                 Text("\nSecond Data")
+                                    .foregroundStyle(lightMode ? .black : .white)
                                 Chart(data2) {
                                     LineMark(
                                         x: .value("Minutes", $0.minutes),
@@ -183,6 +210,22 @@ struct ContentView: View {
                                 }
                                 .chartXScale(domain: 0...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
                                 .foregroundStyle(Color(.green))
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                             }
@@ -195,6 +238,7 @@ struct ContentView: View {
                             
                             VStack {
                                 Text("\nThird Data")
+                                    .foregroundStyle(lightMode ? .black : .white)
                                 Chart(data3) {
                                     LineMark(
                                         x: .value("Minutes", $0.minutes),
@@ -203,6 +247,22 @@ struct ContentView: View {
                                 }
                                 .chartXScale(domain: 0...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
                                 .foregroundStyle(Color(.red))
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                             }
@@ -215,6 +275,7 @@ struct ContentView: View {
                             
                             VStack {
                                 Text("\nCombined Data")
+                                    .foregroundStyle(lightMode ? .black : .white)
                                 Chart(combinedData) {
                                     LineMark(
                                         x: .value("Minutes", $0.minutes),
@@ -225,6 +286,22 @@ struct ContentView: View {
                                 }
                                 .chartXScale(domain: 0...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
+                                .chartXAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks(values: .automatic) {
+                                        AxisValueLabel()
+                                            .foregroundStyle(.gray)
+                                        AxisGridLine()
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
                                 .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                             }
@@ -245,14 +322,15 @@ struct ContentView: View {
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
                 
-                VStack{
+                VStack {
                     Button(action: {
                         withAnimation(.easeIn) {
                             expanded3 = !expanded3
                         }
                     })
                     {
-                        Text(expanded3 ? "Hide Additional Information" : "Show Additional Information")
+                        Text("Additional Information")
+                            .foregroundStyle(lightMode ? .black : .white)
                             .bold()
                             .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
@@ -264,7 +342,9 @@ struct ContentView: View {
                     VStack {
                         ScrollView {
                             Text("Part Number: 123456789")
+                                .foregroundStyle(lightMode ? .black : .white)
                             Text("Product Name: Fusion Series")
+                                .foregroundStyle(lightMode ? .black : .white)
                             Text("")
                             Link("\nMathews Company Phone Number\n(815) 459-2210", destination: URL(string: "tel:8154592210")!)
                             Link("\nMathews Company Website\n(Click Here For More Info)", destination: URL(string: "https://www.mathewscompany.com/contact-us.html")!)
@@ -275,20 +355,77 @@ struct ContentView: View {
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
-                    .animation(.smooth, value: index)
+                }
+                .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                
+                VStack {
+                    Button(action: {
+                        withAnimation(.easeIn) {
+                            expanded4 = !expanded4
+                        }
+                    })
+                    {
+                        Text("Settings")
+                            .bold()
+                            .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
+                            .foregroundStyle(lightMode ? .black : .white)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    
+                    
+                    VStack {
+                        ScrollView {
+                            
+                            
+                        }
+                        .padding()
+                        .contentMargins(20)
+                    }
+                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .clipShape(Rectangle())
+                }
+                .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                
+                VStack {
+                    Button(action: {
+                        withAnimation(.easeIn) {
+                            expanded5 = !expanded5
+                        }
+                    })
+                    {
+                        Text("Exit")
+                            .bold()
+                            .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
+                            .foregroundStyle(lightMode ? .black : .white)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    
+                    
+                    VStack {
+                        ScrollView {
+                            
+                            
+                        }
+                        .padding()
+                        .contentMargins(20)
+                    }
+                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
                 
                 Text("\n")
             }
-            
-            
-            
         }
         .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
         .padding()
-        .preferredColorScheme(lightMode ? .light : .dark)
+        .preferredColorScheme(.dark)
         .background(LinearGradient(colors: [.blue, .purple], startPoint: .bottom, endPoint: .top))
+        
     }
     
     
