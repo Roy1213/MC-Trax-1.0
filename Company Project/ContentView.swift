@@ -76,7 +76,7 @@ struct ContentView: View {
         return VStack {
             Text("\n")
             ScrollView {
-                VStack{
+                VStack {
                     Button(action: {
                         withAnimation(.easeIn) {
                             expanded2 = !expanded2
@@ -121,6 +121,7 @@ struct ContentView: View {
                         }
                         .padding()
                         .contentMargins(20)
+                        .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded2 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
@@ -158,7 +159,7 @@ struct ContentView: View {
                                     )
                                 }
                                 
-                                .chartXScale(domain: 0...chartDomain - 1)
+                                .chartXScale(domain: 1...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
                                 .chartXAxis {
                                     AxisMarks(values: .automatic) {
@@ -177,6 +178,7 @@ struct ContentView: View {
                                     }
                                 }
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                .clipped()
                                 
                             }
                             .containerRelativeFrame(.vertical)
@@ -196,7 +198,7 @@ struct ContentView: View {
                                         y: .value("Output", $0.output)
                                     )
                                 }
-                                .chartXScale(domain: 0...chartDomain - 1)
+                                .chartXScale(domain: 1...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
                                 .chartXAxis {
                                     AxisMarks(values: .automatic) {
@@ -216,6 +218,7 @@ struct ContentView: View {
                                 }
                                 .foregroundStyle(Color(.green))
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                .clipped()
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -233,7 +236,7 @@ struct ContentView: View {
                                         y: .value("Output", $0.output)
                                     )
                                 }
-                                .chartXScale(domain: 0...chartDomain - 1)
+                                .chartXScale(domain: 1...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
                                 .chartXAxis {
                                     AxisMarks(values: .automatic) {
@@ -253,6 +256,7 @@ struct ContentView: View {
                                 }
                                 .foregroundStyle(Color(.red))
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                .clipped()
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -272,7 +276,7 @@ struct ContentView: View {
                                     )
                                     .foregroundStyle(by: .value("Data Name", $0.name))
                                 }
-                                .chartXScale(domain: 0...chartDomain - 1)
+                                .chartXScale(domain: 1...chartDomain - 1)
                                 .chartYScale(domain: 0...chartRange)
                                 .chartXAxis {
                                     AxisMarks(values: .automatic) {
@@ -292,6 +296,7 @@ struct ContentView: View {
                                 }
                                 .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                .clipped()
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -303,6 +308,7 @@ struct ContentView: View {
                         }
                         .padding()
                         .contentMargins(20)
+                        .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
@@ -340,6 +346,7 @@ struct ContentView: View {
                         }
                         .padding()
                         .contentMargins(20)
+                        .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
@@ -389,6 +396,7 @@ struct ContentView: View {
                         }
                         .padding()
                         .contentMargins(20)
+                        .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
@@ -419,6 +427,7 @@ struct ContentView: View {
                         }
                         .padding()
                         .contentMargins(20)
+                        .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
@@ -427,6 +436,7 @@ struct ContentView: View {
                 
                 Text("\n")
             }
+            .scrollIndicators(.hidden)
         }
         .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
         .padding()
