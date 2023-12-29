@@ -41,10 +41,10 @@ struct Data: Identifiable {
 }
 
 struct ContentView: View {
-    @State private var data:         [Data] = []
-    @State private var data2:        [Data] = []
-    @State private var data3:        [Data] = []
-    @State private var combinedData: [Data] = []
+    @State private var data:            [Data] = []
+    @State private var data2:           [Data] = []
+    @State private var data3:           [Data] = []
+    @State private var combinedData:    [Data] = []
     
     @State private var chartDomain      = 25
     @State private var chartRange       = 10
@@ -65,6 +65,10 @@ struct ContentView: View {
     @State private var expanded5        = false
     @State private var rotationAngle    = -30
     @State private var scalingEffect    = 0.7
+    @State private var color1Pick       = Color.blue
+    @State private var color2Pick       = Color.purple
+    @State private var color1           = Color.blue
+    @State private var color2           = Color.purple
     @State private var timer            = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     
@@ -91,22 +95,6 @@ struct ContentView: View {
                     
                     VStack {
                         ScrollView {
-                            Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {
-                                withAnimation(.easeIn) {
-                                    lightMode = !lightMode}
-                                })
-                            Button("Toggle Developer Mode", action: {developerMode = !developerMode
-                                startTimer()})
-                            HStack{
-                                Button("Pause", action: {stopTimer()})
-                                    .opacity(developerMode ? 1 : 0)
-                                Button("Resume", action: {startTimer()})
-                                    .opacity(developerMode ? 1 : 0)
-                                Button("Reset", action: {reset()
-                                downtimeStart = 0})
-                                    .opacity(developerMode ? 1 : 0)
-                            }
-                            
                             Text("Ticks Elapsed: \(index)")
                                 .onReceive(timer) {time in
                                     refreshData()
@@ -377,8 +365,27 @@ struct ContentView: View {
                     
                     VStack {
                         ScrollView {
+                            Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {
+                                withAnimation(.easeIn) {
+                                    lightMode = !lightMode}
+                                })
+                            Button("Toggle Developer Mode", action: {developerMode = !developerMode
+                                startTimer()})
+                            HStack{
+                                Button("Pause", action: {stopTimer()})
+                                    .opacity(developerMode ? 1 : 0)
+                                Button("Resume", action: {startTimer()})
+                                    .opacity(developerMode ? 1 : 0)
+                                Button("Reset", action: {reset()
+                                downtimeStart = 0})
+                                    .opacity(developerMode ? 1 : 0)
+                            }
                             
+                            ColorPicker("Choose Top Color", selection: $color1, supportsOpacity: false)
+                                .foregroundStyle(lightMode ? .black : .white)
                             
+                            ColorPicker("Choose Bottom Color", selection: $color2, supportsOpacity: false)
+                                .foregroundStyle(lightMode ? .black : .white)
                         }
                         .padding()
                         .contentMargins(20)
@@ -424,7 +431,10 @@ struct ContentView: View {
         .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
         .padding()
         .preferredColorScheme(.dark)
-        .background(LinearGradient(colors: [.blue, .purple], startPoint: .bottom, endPoint: .top))
+        .background(LinearGradient(colors: [color2, color1], startPoint: .bottom, endPoint: .top)
+            .animation(.easeInOut, value : color1)
+            .animation(.easeInOut, value : color2))
+        
         
     }
     
