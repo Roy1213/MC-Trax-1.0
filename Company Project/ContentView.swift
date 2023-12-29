@@ -75,7 +75,7 @@ struct ContentView: View {
     var body: some View {
         return ZStack(alignment: .top) {
             ScrollView {
-                Text("\n")
+                Text("\n\n")
                 VStack {
                     Button(action: {
                         withAnimation(.easeIn) {
