@@ -348,7 +348,7 @@ struct ContentView: View {
                         .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.325) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -398,7 +398,7 @@ struct ContentView: View {
                         .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.25) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -429,7 +429,7 @@ struct ContentView: View {
                         .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.05) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
