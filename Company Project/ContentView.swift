@@ -73,9 +73,9 @@ struct ContentView: View {
     
     
     var body: some View {
-        return VStack {
-            Text("\n")
+        return ZStack(alignment: .top) {
             ScrollView {
+                Text("\n")
                 VStack {
                     Button(action: {
                         withAnimation(.easeIn) {
@@ -140,7 +140,7 @@ struct ContentView: View {
                             .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                             .foregroundStyle(lightMode ? .black : .white)
-                            
+                        
                     }
                     .buttonStyle(PlainButtonStyle())
                     
@@ -295,6 +295,30 @@ struct ContentView: View {
                                     }
                                 }
                                 .chartForegroundStyleScale(["First Data": .blue, "Second Data": .green, "Third Data": .red])
+                                .chartLegend(position: .bottom) {
+                                    HStack {
+                                        HStack {
+                                            BasicChartSymbolShape.circle
+                                                .foregroundColor(.blue)
+                                                .frame(width: 8, height: 8)
+                                            Text("First Data")
+                                                .foregroundColor(.gray)
+                                                .font(.caption)
+                                            BasicChartSymbolShape.circle
+                                                .foregroundColor(.green)
+                                                .frame(width: 8, height: 8)
+                                            Text("Second Data")
+                                                .foregroundColor(.gray)
+                                                .font(.caption)
+                                            BasicChartSymbolShape.circle
+                                                .foregroundColor(.red)
+                                                .frame(width: 8, height: 8)
+                                            Text("Third Data")
+                                                .foregroundColor(.gray)
+                                                .font(.caption)
+                                        }
+                                    }
+                                }
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                                 .clipped()
                             }
@@ -373,9 +397,9 @@ struct ContentView: View {
                     VStack {
                         ScrollView {
                             Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {
-                                withAnimation(.easeIn) {
+                                withAnimation(.smooth) {
                                     lightMode = !lightMode}
-                                })
+                            })
                             Button("Toggle Developer Mode", action: {developerMode = !developerMode
                                 startTimer()})
                             HStack{
@@ -384,8 +408,8 @@ struct ContentView: View {
                                 Button("Resume", action: {startTimer()})
                                     .opacity(developerMode ? 1 : 0)
                                 Button("Reset", action: {reset()
-                                downtimeStart = 0})
-                                    .opacity(developerMode ? 1 : 0)
+                                    downtimeStart = 0})
+                                .opacity(developerMode ? 1 : 0)
                             }
                             
                             ColorPicker("Choose Top Color", selection: $color1, supportsOpacity: false)
@@ -437,6 +461,12 @@ struct ContentView: View {
                 Text("\n")
             }
             .scrollIndicators(.hidden)
+            
+            RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .circular)
+                .background(.ultraThinMaterial)
+                .frame(width: UIWindow.current?.screen.bounds.width, height: 60)
+                .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .circular))
+                .ignoresSafeArea()
         }
         .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
         .padding()
@@ -444,6 +474,8 @@ struct ContentView: View {
         .background(LinearGradient(colors: [color2, color1], startPoint: .bottom, endPoint: .top)
             .animation(.easeInOut, value : color1)
             .animation(.easeInOut, value : color2))
+        //.ignoresSafeArea()
+        
         
         
     }
