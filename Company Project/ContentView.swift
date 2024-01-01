@@ -40,7 +40,15 @@ struct Data: Identifiable {
     }
 }
 
-struct ContentView: View {
+struct LoginView : View {
+    var body: some View {
+        VStack {
+            Text("Hello world")
+        }
+    }
+}
+
+struct RemoteControlView: View {
     @State private var data:            [Data] = []
     @State private var data2:           [Data] = []
     @State private var data3:           [Data] = []
@@ -592,5 +600,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    LoginView()
 }
