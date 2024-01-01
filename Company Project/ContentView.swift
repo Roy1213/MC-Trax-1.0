@@ -40,10 +40,13 @@ struct Data: Identifiable {
     }
 }
 
-struct LoginView : View {
+struct ContentView : View {
     var body: some View {
-        VStack {
-            Text("Hello world")
+        NavigationStack {
+            VStack {
+                Text("Hello world")
+                NavigationLink("Testing", destination: RemoteControlView())
+            }
         }
     }
 }
@@ -77,9 +80,9 @@ struct RemoteControlView: View {
     @State private var color2Pick       = Color.purple
     @State private var color1           = Color.blue
     @State private var color2           = Color.purple
-    @State private var slider1          = 3.0
-    @State private var slider2          = 3.0
-    @State private var slider3          = 3.0
+    @State private var slider1          = 1.0
+    @State private var slider2          = 1.0
+    @State private var slider3          = 1.0
     @State private var timer            = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     
@@ -112,66 +115,83 @@ struct RemoteControlView: View {
                                     index += 1
                                     
                                     if (index >= downtimeStart + downtimeWait) {
-                                        buttonDowntime = false
+                                        withAnimation(.smooth) {
+                                            buttonDowntime = false
+                                        }
                                     }
                                 }
                                 .foregroundStyle(lightMode ? .black : .white)
-                            Button(action: {buttonEngaged = !buttonEngaged
+                            Button(action: {
+                                buttonEngaged = !buttonEngaged
                                 buttonDowntime = true
-                                downtimeStart = index}) {
-                                    Text(buttonEngaged ? "Shut Down" : "Turn On")
-                                    
-                                        .frame(width: ((UIWindow.current?.screen.bounds.height)! * 0.2), height:  ((UIWindow.current?.screen.bounds.height)! * 0.2))
-                                        .font(.title)
-                                        .background(Circle().fill(buttonEngaged ? Color.green : Color.red))
-                                        .foregroundStyle(lightMode ? .black : .white)
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .disabled(buttonDowntime)
+                                downtimeStart = index
+                            }) {
+                                Text(buttonEngaged ? "Shut Down" : "Turn On")
+                                
+                                    .frame(width: ((UIWindow.current?.screen.bounds.height)! * 0.2), height:  ((UIWindow.current?.screen.bounds.height)! * 0.2))
+                                    .font(.title)
+                                    .background(Circle().fill(buttonEngaged ? Color.green : Color.red))
+                                    .foregroundStyle(lightMode ? .black : .white)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .disabled(buttonDowntime)
+                            .animation(.smooth, value: buttonDowntime)
                             
-                            Slider(value: $slider1, in: 1...5, step: 1)
-                            {
+                            Slider(value: $slider1, in: 0.25...1.6, step: 0.01) {
                                 Text("First Slider")
                             }
                         minimumValueLabel: {
-                            Text("1")
+                            Text("0.25")
                         }
                         maximumValueLabel: {
-                            Text("5")
+                            Text("1.60")
                         }
                         .foregroundStyle(lightMode ? .black : .white)
+                        .disabled(!buttonEngaged)
                             
-                            
-                            
-                            Text("First Slider Value: \(Int(slider1))")
+                            Text("First Slider Value: \(slider1)")
                                 .foregroundStyle(lightMode ? .black : .white)
+                                .disabled(!buttonEngaged)
                             
-                            Slider(value: $slider2, in: 1...5, step: 1) {
+                            
+                            Slider(value: $slider2, in: 0.25...1.6, step: 0.01) {
                                 Text("Second Slider")
                             }
                         minimumValueLabel: {
-                            Text("1")
+                            Text("0.25")
                         }
                         maximumValueLabel: {
-                            Text("5")
+                            Text("1.60")
                         }
                         .foregroundStyle(lightMode ? .black : .white)
+                        .disabled(!buttonEngaged)
+                        .animation(.smooth, value: buttonEngaged)
                             
-                            Text("Second Slider Value: \(Int(slider2))")
+                            Text("Second Slider Value: \(slider2)")
                                 .foregroundStyle(lightMode ? .black : .white)
+                                
                             
-                            Slider(value: $slider3, in: 1...5, step: 1) {
+                            Slider(value: $slider3, in: 0.25...1.6, step: 0.01) {
                                 Text("Third Slider")
                             }
                         minimumValueLabel: {
-                            Text("1")
+                            Text("0.25")
                         }
                         maximumValueLabel: {
-                            Text("5")
+                            Text("1.60")
                         }
                         .foregroundStyle(lightMode ? .black : .white)
-                            Text("Third Slider Value: \(Int(slider3))")
+                        .disabled(!buttonEngaged)
+                        .animation(.smooth, value: buttonEngaged)
+                            
+                            Text("Third Slider Value: \(slider3)")
                                 .foregroundStyle(lightMode ? .black : .white)
+                            
+                            
+                            
+                            
+                            
+                            
                             
                         }
                         .padding()
@@ -524,7 +544,7 @@ struct RemoteControlView: View {
         .background(LinearGradient(colors: [color2, color1], startPoint: .bottom, endPoint: .top)
             .animation(.smooth, value : color1)
             .animation(.smooth, value : color2))
-        //.ignoresSafeArea()
+        .navigationBarBackButtonHidden()
         
         
         
@@ -549,7 +569,7 @@ struct RemoteControlView: View {
     }
     
     func firstData() {
-        data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1)) * slider1 / 3.0))
+        data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1)) * slider1))
         for _ in 1...chartDomain - 1 {
             refreshData()
         }
@@ -563,7 +583,7 @@ struct RemoteControlView: View {
         let rangeBottom = 0.4 * Double(chartRange)
         let rangeTop = 0.6 * Double(chartRange)
         
-        data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop) * slider1 / 3.0))
+        data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop) * slider1))
         if data.count >= chartDomain {
             data.remove(at: 0)
             for i in 0..<data.count {
@@ -571,7 +591,7 @@ struct RemoteControlView: View {
             }
         }
         
-        data2.append(Data(name: "Second Data", minutes: data2.count, output: Double.random(in:rangeBottom..<rangeTop) * slider2 / 3.0))
+        data2.append(Data(name: "Second Data", minutes: data2.count, output: Double.random(in:rangeBottom..<rangeTop) * slider2))
         if data2.count >= chartDomain {
             data2.remove(at: 0)
             for i in 0..<data2.count {
@@ -579,7 +599,7 @@ struct RemoteControlView: View {
             }
         }
         
-        data3.append(Data(name: "Third Data", minutes: data3.count, output: Double.random(in:rangeBottom..<rangeTop) * slider3 / 3.0))
+        data3.append(Data(name: "Third Data", minutes: data3.count, output: Double.random(in:rangeBottom..<rangeTop) * slider3))
         if data3.count >= chartDomain {
             data3.remove(at: 0)
             for i in 0..<data3.count {
@@ -600,5 +620,5 @@ struct RemoteControlView: View {
 }
 
 #Preview {
-    LoginView()
+    ContentView()
 }
