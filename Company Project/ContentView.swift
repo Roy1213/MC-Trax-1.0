@@ -121,44 +121,52 @@ struct ContentView: View {
                                 .buttonStyle(PlainButtonStyle())
                                 .disabled(buttonDowntime)
                             
-                            Slider(value: $slider1, in: 1...5, step: 1) {
+                            Slider(value: $slider1, in: 1...5, step: 1)
+                            {
                                 Text("First Slider")
                             }
                         minimumValueLabel: {
-                                Text("1")
-                            }
+                            Text("1")
+                        }
                         maximumValueLabel: {
-                                Text("5")
-                            }
-                        
+                            Text("5")
+                        }
+                        .foregroundStyle(lightMode ? .black : .white)
+                            
+                            
                             
                             Text("First Slider Value: \(Int(slider1))")
+                                .foregroundStyle(lightMode ? .black : .white)
                             
                             Slider(value: $slider2, in: 1...5, step: 1) {
                                 Text("Second Slider")
                             }
                         minimumValueLabel: {
-                                Text("1")
-                            }
+                            Text("1")
+                        }
                         maximumValueLabel: {
-                                Text("5")
-                            }
+                            Text("5")
+                        }
+                        .foregroundStyle(lightMode ? .black : .white)
+                            
                             Text("Second Slider Value: \(Int(slider2))")
+                                .foregroundStyle(lightMode ? .black : .white)
                             
                             Slider(value: $slider3, in: 1...5, step: 1) {
                                 Text("Third Slider")
                             }
                         minimumValueLabel: {
-                                Text("1")
-                            }
+                            Text("1")
+                        }
                         maximumValueLabel: {
-                                Text("5")
-                            }
+                            Text("5")
+                        }
+                        .foregroundStyle(lightMode ? .black : .white)
                             Text("Third Slider Value: \(Int(slider3))")
+                                .foregroundStyle(lightMode ? .black : .white)
                             
                         }
                         .padding()
-                        .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded2 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
@@ -369,7 +377,6 @@ struct ContentView: View {
                             
                         }
                         .padding()
-                        .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
@@ -407,7 +414,6 @@ struct ContentView: View {
                             
                         }
                         .padding()
-                        .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.325) : 0)
@@ -457,7 +463,6 @@ struct ContentView: View {
                                 .foregroundStyle(lightMode ? .black : .white)
                         }
                         .padding()
-                        .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.25) : 0)
@@ -488,7 +493,6 @@ struct ContentView: View {
                             
                         }
                         .padding()
-                        .contentMargins(20)
                         .scrollIndicators(.hidden)
                     }
                     .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.05) : 0)
