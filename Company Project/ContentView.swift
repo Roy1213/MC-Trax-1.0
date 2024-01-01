@@ -69,6 +69,9 @@ struct ContentView: View {
     @State private var color2Pick       = Color.purple
     @State private var color1           = Color.blue
     @State private var color2           = Color.purple
+    @State private var slider1          = 3.0
+    @State private var slider2          = 3.0
+    @State private var slider3          = 3.0
     @State private var timer            = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     
@@ -117,6 +120,41 @@ struct ContentView: View {
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .disabled(buttonDowntime)
+                            
+                            Slider(value: $slider1, in: 1...5, step: 1) {
+                                Text("First Slider")
+                            }
+                        minimumValueLabel: {
+                                Text("1")
+                            }
+                        maximumValueLabel: {
+                                Text("5")
+                            }
+                        
+                            
+                            Text("First Slider Value: \(Int(slider1))")
+                            
+                            Slider(value: $slider2, in: 1...5, step: 1) {
+                                Text("Second Slider")
+                            }
+                        minimumValueLabel: {
+                                Text("1")
+                            }
+                        maximumValueLabel: {
+                                Text("5")
+                            }
+                            Text("Second Slider Value: \(Int(slider2))")
+                            
+                            Slider(value: $slider3, in: 1...5, step: 1) {
+                                Text("Third Slider")
+                            }
+                        minimumValueLabel: {
+                                Text("1")
+                            }
+                        maximumValueLabel: {
+                                Text("5")
+                            }
+                            Text("Third Slider Value: \(Int(slider3))")
                             
                         }
                         .padding()
@@ -472,8 +510,8 @@ struct ContentView: View {
         .padding()
         .preferredColorScheme(.dark)
         .background(LinearGradient(colors: [color2, color1], startPoint: .bottom, endPoint: .top)
-            .animation(.easeInOut, value : color1)
-            .animation(.easeInOut, value : color2))
+            .animation(.smooth, value : color1)
+            .animation(.smooth, value : color2))
         //.ignoresSafeArea()
         
         
@@ -499,7 +537,7 @@ struct ContentView: View {
     }
     
     func firstData() {
-        data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1))))
+        data.append(Data(name: "First Data", minutes: 0, output: Double.random(in:Double(chartRange/2 - 1)...Double(chartRange/2 + 1)) * slider1 / 3.0))
         for _ in 1...chartDomain - 1 {
             refreshData()
         }
@@ -513,7 +551,7 @@ struct ContentView: View {
         let rangeBottom = 0.4 * Double(chartRange)
         let rangeTop = 0.6 * Double(chartRange)
         
-        data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop)))
+        data.append(Data(name: "First Data", minutes: data.count, output: Double.random(in:rangeBottom..<rangeTop) * slider1 / 3.0))
         if data.count >= chartDomain {
             data.remove(at: 0)
             for i in 0..<data.count {
@@ -521,7 +559,7 @@ struct ContentView: View {
             }
         }
         
-        data2.append(Data(name: "Second Data", minutes: data2.count, output: Double.random(in:rangeBottom..<rangeTop)))
+        data2.append(Data(name: "Second Data", minutes: data2.count, output: Double.random(in:rangeBottom..<rangeTop) * slider2 / 3.0))
         if data2.count >= chartDomain {
             data2.remove(at: 0)
             for i in 0..<data2.count {
@@ -529,7 +567,7 @@ struct ContentView: View {
             }
         }
         
-        data3.append(Data(name: "Third Data", minutes: data3.count, output: Double.random(in:rangeBottom..<rangeTop) - 0.25 * Double(chartRange)))
+        data3.append(Data(name: "Third Data", minutes: data3.count, output: Double.random(in:rangeBottom..<rangeTop) * slider3 / 3.0))
         if data3.count >= chartDomain {
             data3.remove(at: 0)
             for i in 0..<data3.count {
