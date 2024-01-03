@@ -83,6 +83,7 @@ struct RemoteControlView: View {
     @State private var slider1          = 1.0
     @State private var slider2          = 1.0
     @State private var slider3          = 1.0
+    @State private var inAnimation      = false
     @State private var timer            = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     
@@ -470,7 +471,12 @@ struct RemoteControlView: View {
                         ScrollView {
                             Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {
                                 withAnimation(.smooth) {
-                                    lightMode = !lightMode}
+                                    inAnimation = true
+                                    lightMode = !lightMode} completion: {
+                                        withAnimation(.smooth) {
+                                            inAnimation = false
+                                        }
+                                    }
                             })
                             Button("Toggle Developer Mode", action: {developerMode = !developerMode
                                 startTimer()})
@@ -545,6 +551,7 @@ struct RemoteControlView: View {
             .animation(.smooth, value : color1)
             .animation(.smooth, value : color2))
         .navigationBarBackButtonHidden()
+        .disabled(inAnimation)
         
         
         
