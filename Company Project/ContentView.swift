@@ -57,34 +57,35 @@ struct RemoteControlView: View {
     @State private var data3:           [Data] = []
     @State private var combinedData:    [Data] = []
     
-    @State private var chartDomain      = 25
-    @State private var chartRange       = 10
-    @State private var heightMultiplier = 0.25
-    @State private var developerMode    = false
-    @State private var paused           = false
-    @State private var buttonEngaged    = false
-    @State private var buttonDowntime   = false
-    @State private var downtimeStart    = -1
-    @State private var downtimeWait     = 5
-    @State private var lightMode        = false
-    @State private var frequency        = 1
-    @State private var index            = 0
-    @State private var expanded         = false
-    @State private var expanded2        = false
-    @State private var expanded3        = false
-    @State private var expanded4        = false
-    @State private var expanded5        = false
-    @State private var rotationAngle    = -30
-    @State private var scalingEffect    = 0.7
-    @State private var color1Pick       = Color.blue
-    @State private var color2Pick       = Color.purple
-    @State private var color1           = Color.blue
-    @State private var color2           = Color.purple
-    @State private var slider1          = 1.0
-    @State private var slider2          = 1.0
-    @State private var slider3          = 1.0
-    @State private var inAnimation      = false
-    @State private var timer            = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var chartDomain       = 25
+    @State private var chartRange        = 10
+    @State private var heightMultiplier  = 0.25
+    @State private var developerMode     = false
+    @State private var paused            = false
+    @State private var buttonEngaged     = false
+    @State private var buttonDowntime    = false
+    @State private var downtimeStart     = -1
+    @State private var downtimeWait      = 5
+    @State private var lightMode         = false
+    @State private var frequency         = 1
+    @State private var index             = 0
+    @State private var expanded          = false
+    @State private var expanded2         = false
+    @State private var expanded3         = false
+    @State private var expanded4         = false
+    @State private var expanded5         = false
+    @State private var rotationAngle     = -30
+    @State private var scalingEffect     = 0.7
+    @State private var color1Pick        = Color.blue
+    @State private var color2Pick        = Color.purple
+    @State private var color1            = Color.blue
+    @State private var color2            = Color.purple
+    @State private var slider1           = 1.0
+    @State private var slider2           = 1.0
+    @State private var slider3           = 1.0
+    @State private var inAnimation       = false
+    @State private var dynamicBackground = true
+    @State private var timer             = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @Environment(\.dismiss) var dismiss
     
@@ -506,6 +507,8 @@ struct RemoteControlView: View {
                             
                             ColorPicker("Choose Bottom Color", selection: $color2, supportsOpacity: false)
                                 .foregroundStyle(lightMode ? .black : .white)
+                            
+                            Toggle("Dynamic Background", isOn: $dynamicBackground)
                         }
                         .padding()
                         .scrollIndicators(.hidden)
@@ -559,6 +562,7 @@ struct RemoteControlView: View {
         .padding()
         .preferredColorScheme(.dark)
         .background(LinearGradient(colors: [color2, color1], startPoint: .bottom, endPoint: .top)
+            .hueRotation(.degrees(dynamicBackground ? 45 : 0))
             .animation(.smooth, value : color1)
             .animation(.smooth, value : color2))
         .navigationBarBackButtonHidden()
