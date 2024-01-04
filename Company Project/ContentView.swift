@@ -19,8 +19,6 @@ extension UIWindow {
         return nil
     }
 }
-
-
 extension UIScreen {
     static var current: UIScreen? {
         UIWindow.current?.screen
@@ -40,6 +38,7 @@ struct Data: Identifiable {
     }
 }
 
+
 struct ContentView : View {
     var body: some View {
         NavigationStack {
@@ -48,6 +47,7 @@ struct ContentView : View {
                 NavigationLink("Testing", destination: RemoteControlView())
             }
         }
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -86,6 +86,8 @@ struct RemoteControlView: View {
     @State private var inAnimation      = false
     @State private var timer            = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
+    @Environment(\.dismiss) var dismiss
+    
     
     var body: some View {
         return ZStack(alignment: .top) {
@@ -105,6 +107,7 @@ struct RemoteControlView: View {
                             .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .disabled(inAnimation)
                     
                     
                     
@@ -123,7 +126,9 @@ struct RemoteControlView: View {
                                 }
                                 .foregroundStyle(lightMode ? .black : .white)
                             Button(action: {
-                                buttonEngaged = !buttonEngaged
+                                withAnimation(.smooth) {
+                                    buttonEngaged = !buttonEngaged
+                                }
                                 buttonDowntime = true
                                 downtimeStart = index
                             }) {
@@ -147,8 +152,10 @@ struct RemoteControlView: View {
                         maximumValueLabel: {
                             Text("1.60")
                         }
+                        .tint(.blue)
                         .foregroundStyle(lightMode ? .black : .white)
                         .disabled(!buttonEngaged)
+                        
                             
                             Text("First Slider Value: \(slider1)")
                                 .foregroundStyle(lightMode ? .black : .white)
@@ -164,9 +171,9 @@ struct RemoteControlView: View {
                         maximumValueLabel: {
                             Text("1.60")
                         }
+                        .tint(.green)
                         .foregroundStyle(lightMode ? .black : .white)
                         .disabled(!buttonEngaged)
-                        .animation(.smooth, value: buttonEngaged)
                             
                             Text("Second Slider Value: \(slider2)")
                                 .foregroundStyle(lightMode ? .black : .white)
@@ -181,9 +188,9 @@ struct RemoteControlView: View {
                         maximumValueLabel: {
                             Text("1.60")
                         }
+                        .tint(.red)
                         .foregroundStyle(lightMode ? .black : .white)
                         .disabled(!buttonEngaged)
-                        .animation(.smooth, value: buttonEngaged)
                             
                             Text("Third Slider Value: \(slider3)")
                                 .foregroundStyle(lightMode ? .black : .white)
@@ -218,6 +225,7 @@ struct RemoteControlView: View {
                         
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .disabled(inAnimation)
                     
                     
                     
@@ -244,6 +252,7 @@ struct RemoteControlView: View {
                                             .foregroundStyle(.gray)
                                     }
                                 }
+                                .foregroundStyle(.blue)
                                 .chartYAxis {
                                     AxisMarks(values: .automatic) {
                                         AxisValueLabel()
@@ -428,6 +437,7 @@ struct RemoteControlView: View {
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .disabled(inAnimation)
                     
                     
                     
@@ -464,6 +474,7 @@ struct RemoteControlView: View {
                             .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .disabled(inAnimation)
                     
                     
                     
@@ -511,25 +522,25 @@ struct RemoteControlView: View {
                         }
                     })
                     {
-                        Text("Exit")
+                        Text("Back to Login")
                             .bold()
                             .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                             .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .disabled(inAnimation)
                     
                     
                     
                     VStack {
                         ScrollView {
-                            
-                            
+                            Button("Are You Sure?", action: {dismiss()})
                         }
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.05) : 0)
+                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -551,7 +562,6 @@ struct RemoteControlView: View {
             .animation(.smooth, value : color1)
             .animation(.smooth, value : color2))
         .navigationBarBackButtonHidden()
-        .disabled(inAnimation)
         
         
         
