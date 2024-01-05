@@ -84,8 +84,8 @@ struct RemoteControlView: View {
     @State private var slider2           = 1.0
     @State private var slider3           = 1.0
     @State private var inAnimation       = false
-    @State private var dynamicBackground = true
-    @State private var dynamicOn         = true
+    //@State private var rotationAngle2    = 0
+    //@State private var dynamicOn         = true
     @State private var timer             = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @Environment(\.dismiss) var dismiss
@@ -156,7 +156,6 @@ struct RemoteControlView: View {
                         }
                         .tint(.blue)
                         .foregroundStyle(lightMode ? .black : .white)
-                        .disabled(!buttonEngaged)
                         
                             
                             Text("First Slider Value: \(slider1)")
@@ -175,7 +174,6 @@ struct RemoteControlView: View {
                         }
                         .tint(.green)
                         .foregroundStyle(lightMode ? .black : .white)
-                        .disabled(!buttonEngaged)
                             
                             Text("Second Slider Value: \(slider2)")
                                 .foregroundStyle(lightMode ? .black : .white)
@@ -192,7 +190,6 @@ struct RemoteControlView: View {
                         }
                         .tint(.red)
                         .foregroundStyle(lightMode ? .black : .white)
-                        .disabled(!buttonEngaged)
                             
                             Text("Third Slider Value: \(slider3)")
                                 .foregroundStyle(lightMode ? .black : .white)
@@ -509,7 +506,7 @@ struct RemoteControlView: View {
                             ColorPicker("Choose Bottom Color", selection: $color2, supportsOpacity: false)
                                 .foregroundStyle(lightMode ? .black : .white)
                             
-                            Toggle("Dynamic Background", isOn: $dynamicOn)
+                            //Toggle("Dynamic Background", isOn: $dynamicOn)
                         }
                         .padding()
                         .scrollIndicators(.hidden)
@@ -562,15 +559,18 @@ struct RemoteControlView: View {
         .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
         .padding()
         .preferredColorScheme(.dark)
-        .background(LinearGradient(colors: [color2, color1], startPoint: .bottom, endPoint: .top)
-            .hueRotation(.degrees(dynamicBackground ? 45 : 0))
+        .background(LinearGradient(colors: [color2, color1], startPoint: .top, endPoint: .bottom)
             .animation(.smooth, value : color1)
             .animation(.smooth, value : color2))
-        .onAppear {
-            withAnimation(.smooth(duration: 4).repeatForever(autoreverses: true)) {
-                dynamicBackground.toggle()
-            }
-        }
+//            .frame(width: ((UIWindow.current?.screen.bounds.height)!) * 1.25, height: ((UIWindow.current?.screen.bounds.height)!) * 1.25)
+//            .rotationEffect(.degrees(Double(rotationAngle2)))
+        
+//        .onAppear {
+//            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
+//                rotationAngle2 = 360
+//            }
+//        }
+        
         .navigationBarBackButtonHidden()
         
         
