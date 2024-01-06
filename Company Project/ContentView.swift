@@ -161,13 +161,13 @@ struct RemoteControlView: View {
                         }
                         .tint(.blue)
                         .foregroundStyle(lightMode ? .black : .white)
-                        .disabled(!buttonEngaged)
-                        .animation(.smooth, value: buttonEngaged)
+                        .allowsHitTesting(buttonEngaged)
+                        .colorMultiply(buttonEngaged ? .white : .gray)
                         
                             
-                            Text("First Slider Value: \(slider1)")
+                            Text("First Slider Value: \(slider1, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
-                                //.disabled(!buttonEngaged)
+                                .colorMultiply(buttonEngaged ? .white : .gray)
                             
                             
                             Slider(value: $slider2, in: 0.25...1.6, step: 0.01) {
@@ -181,9 +181,13 @@ struct RemoteControlView: View {
                         }
                         .tint(.green)
                         .foregroundStyle(lightMode ? .black : .white)
+                        .allowsHitTesting(buttonEngaged)
+                        .colorMultiply(buttonEngaged ? .white : .gray)
+
                             
-                            Text("Second Slider Value: \(slider2)")
+                            Text("Second Slider Value: \(slider2, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
+                                .colorMultiply(buttonEngaged ? .white : .gray)
                                 
                             
                             Slider(value: $slider3, in: 0.25...1.6, step: 0.01) {
@@ -197,9 +201,12 @@ struct RemoteControlView: View {
                         }
                         .tint(.red)
                         .foregroundStyle(lightMode ? .black : .white)
+                        .allowsHitTesting(buttonEngaged)
+                        .colorMultiply(buttonEngaged ? .white : .gray)
                             
-                            Text("Third Slider Value: \(slider3)")
+                            Text("Third Slider Value: \(slider3, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
+                                .colorMultiply(buttonEngaged ? .white : .gray)
                             
                             
                             
@@ -487,7 +494,7 @@ struct RemoteControlView: View {
                     VStack {
                         ScrollView {
                             Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {
-                                withAnimation(.linear) {
+                                withAnimation(.easeOut) {
                                     inAnimation = true
                                     lightMode.toggle()} completion: {
                                         inAnimation = false
