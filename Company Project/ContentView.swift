@@ -80,9 +80,9 @@ struct RemoteControlView: View {
     @State private var color2Pick        = Color.purple
     @State private var color1            = Color.blue
     @State private var color2            = Color.purple
-    @State private var slider1           = 1.0
-    @State private var slider2           = 1.0
-    @State private var slider3           = 1.0
+    @State private var slider1           = 0.925
+    @State private var slider2           = 0.925
+    @State private var slider3           = 0.925
     @State private var inAnimation       = false
     //@State private var rotationAngle2    = 0
     //@State private var dynamicOn         = true
@@ -132,9 +132,9 @@ struct RemoteControlView: View {
                                     buttonEngaged = !buttonEngaged
                                     buttonDowntime = true
                                     downtimeStart = index
-                                    slider1 = 1
-                                    slider2 = 1
-                                    slider3 = 1
+                                    slider1 = 0.925
+                                    slider2 = 0.925
+                                    slider3 = 0.925
                                 }
                                 
                                 
@@ -162,12 +162,12 @@ struct RemoteControlView: View {
                         .tint(.blue)
                         .foregroundStyle(lightMode ? .black : .white)
                         .allowsHitTesting(buttonEngaged)
-                        .colorMultiply(buttonEngaged ? .white : .gray)
+                        .opacity(buttonEngaged ? 1 : 0.5)
                         
                             
                             Text("First Slider Value: \(slider1, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
-                                .colorMultiply(buttonEngaged ? .white : .gray)
+                                .opacity(buttonEngaged ? 1 : 0.5)
                             
                             
                             Slider(value: $slider2, in: 0.25...1.6, step: 0.01) {
@@ -182,12 +182,12 @@ struct RemoteControlView: View {
                         .tint(.green)
                         .foregroundStyle(lightMode ? .black : .white)
                         .allowsHitTesting(buttonEngaged)
-                        .colorMultiply(buttonEngaged ? .white : .gray)
+                        .opacity(buttonEngaged ? 1 : 0.5)
 
                             
                             Text("Second Slider Value: \(slider2, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
-                                .colorMultiply(buttonEngaged ? .white : .gray)
+                                .opacity(buttonEngaged ? 1 : 0.5)
                                 
                             
                             Slider(value: $slider3, in: 0.25...1.6, step: 0.01) {
@@ -202,11 +202,11 @@ struct RemoteControlView: View {
                         .tint(.red)
                         .foregroundStyle(lightMode ? .black : .white)
                         .allowsHitTesting(buttonEngaged)
-                        .colorMultiply(buttonEngaged ? .white : .gray)
+                        .opacity(buttonEngaged ? 1 : 0.5)
                             
                             Text("Third Slider Value: \(slider3, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
-                                .colorMultiply(buttonEngaged ? .white : .gray)
+                                .opacity(buttonEngaged ? 1 : 0.5)
                             
                             
                             
@@ -218,7 +218,7 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded2 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded2 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -238,7 +238,6 @@ struct RemoteControlView: View {
                         
                     }
                     .buttonStyle(PlainButtonStyle())
-                    //.disabled(inAnimation)
                     
                     
                     
@@ -274,8 +273,7 @@ struct RemoteControlView: View {
                                             .foregroundStyle(.gray)
                                     }
                                 }
-                                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                                .clipped()
+                                //.frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
                                 
                             }
                             .containerRelativeFrame(.vertical)
@@ -315,7 +313,6 @@ struct RemoteControlView: View {
                                 }
                                 .foregroundStyle(Color(.green))
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                                .clipped()
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -353,7 +350,6 @@ struct RemoteControlView: View {
                                 }
                                 .foregroundStyle(Color(.red))
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                                .clipped()
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -417,7 +413,6 @@ struct RemoteControlView: View {
                                     }
                                 }
                                 .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                                .clipped()
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -468,7 +463,7 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.325) : 0)
+                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.325) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -523,7 +518,7 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.25) : 0)
+                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.25) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -553,7 +548,7 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
+                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
