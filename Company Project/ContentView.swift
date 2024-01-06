@@ -109,7 +109,7 @@ struct RemoteControlView: View {
                             .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .disabled(inAnimation)
+                    //.disabled(inAnimation)
                     
                     
                     
@@ -130,9 +130,14 @@ struct RemoteControlView: View {
                             Button(action: {
                                 withAnimation(.smooth) {
                                     buttonEngaged = !buttonEngaged
+                                    buttonDowntime = true
+                                    downtimeStart = index
+                                    slider1 = 1
+                                    slider2 = 1
+                                    slider3 = 1
                                 }
-                                buttonDowntime = true
-                                downtimeStart = index
+                                
+                                
                             }) {
                                 Text(buttonEngaged ? "Shut Down" : "Turn On")
                                 
@@ -156,11 +161,13 @@ struct RemoteControlView: View {
                         }
                         .tint(.blue)
                         .foregroundStyle(lightMode ? .black : .white)
+                        .disabled(!buttonEngaged)
+                        .animation(.smooth, value: buttonEngaged)
                         
                             
                             Text("First Slider Value: \(slider1)")
                                 .foregroundStyle(lightMode ? .black : .white)
-                                .disabled(!buttonEngaged)
+                                //.disabled(!buttonEngaged)
                             
                             
                             Slider(value: $slider2, in: 0.25...1.6, step: 0.01) {
@@ -224,7 +231,7 @@ struct RemoteControlView: View {
                         
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .disabled(inAnimation)
+                    //.disabled(inAnimation)
                     
                     
                     
@@ -436,7 +443,7 @@ struct RemoteControlView: View {
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .disabled(inAnimation)
+                    //.disabled(inAnimation)
                     
                     
                     
@@ -473,19 +480,17 @@ struct RemoteControlView: View {
                             .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .disabled(inAnimation)
+                    //.disabled(inAnimation)
                     
                     
                     
                     VStack {
                         ScrollView {
                             Button(lightMode ? "Toggle Dark Mode" : "Toggle Light Mode", action: {
-                                withAnimation(.smooth) {
+                                withAnimation(.linear) {
                                     inAnimation = true
-                                    lightMode = !lightMode} completion: {
-                                        withAnimation(.smooth) {
-                                            inAnimation = false
-                                        }
+                                    lightMode.toggle()} completion: {
+                                        inAnimation = false
                                     }
                             })
                             Button("Toggle Developer Mode", action: {developerMode = !developerMode
@@ -530,7 +535,7 @@ struct RemoteControlView: View {
                             .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .disabled(inAnimation)
+                    //.disabled(inAnimation)
                     
                     
                     
@@ -572,6 +577,7 @@ struct RemoteControlView: View {
 //        }
         
         .navigationBarBackButtonHidden()
+        .allowsHitTesting(!inAnimation)
         
         
         
