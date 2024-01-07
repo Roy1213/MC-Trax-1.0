@@ -35,11 +35,11 @@ struct Machine {
                          "FUSION"]
     
     var model : String
-    var partNumber : String
+    var serialNumber : String
     
-    init(model: String, partNumber: String) {
+    init(model: String, serialNumber: String) {
         self.model = model
-        self.partNumber = partNumber
+        self.serialNumber = serialNumber
     }
 }
 struct Owner {
@@ -76,85 +76,155 @@ struct Data: Identifiable {
 struct ContentView : View {
     @State private var userName = ""
     @State private var password = ""
+    @State private var loginBackgroundColor = Color.red
+    @State private var loginBackgroundColorAngle = 0.0
+    @State private var nextView = false
+    @State private var loginAngle = 0.0
+    @State private var wiggleDuration = 0.1
+    @State private var wiggleAngle = 2.5
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                
-                TextField("Enter user name (email address)", text: $userName)
-                    .multilineTextAlignment(.center)
+            NavigationStack {
+                VStack {
+                    Text("Mathews Company")
+                        .font(.largeTitle)
+                        .foregroundStyle(.white)
+                        .fontWeight(.black)
+                    Text("Monitoring and Remote Control\n")
+                        .fontWidth(.expanded)
+                        .foregroundStyle(.white)
                     
-                
-                SecureField("Enter password", text: $password)
-                    .multilineTextAlignment(.center)
-                
-                NavigationLink("Testing", destination: RemoteControlView())
-            }
-        }
-        .preferredColorScheme(.light)
-        .onAppear {
-            
-            var owners = [Owner]()
-            var owners2 = [Owner]()
-            
-            for i in 1...100 {
-                let model = Machine.models[Int.random(in: 0...Machine.models.count - 1)]
-                let partNumber = String(Int.random(in: 1000000000...9999999999))
-                let machine = Machine(model: model, partNumber: partNumber)
-                
-                let email = "farmer\(i)@gmail.com"
-                let password = "farmer\(i)Password"
-                let machines = [machine]
-                
-                let farmer = Owner(role: "Farmer", email: email, password: password, machines: machines)
-                owners.append(farmer)
-                owners2.append(farmer)
-            }
-            
-            for i in 1...20 {
-                let email = "distributor\(i)@gmail.com"
-                let password = "distributor\(i)Password"
-                var machines = [Machine]()
-                
-                for j in 1...5 {
-                    machines += owners.remove(at: 0).machines
+                    TextField("Enter user name (email address)", text: $userName)
+                        .multilineTextAlignment(.center)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal)
+                        .textInputAutocapitalization(.never)
+                    
+                    SecureField("Enter password", text: $password)
+                        .multilineTextAlignment(.center)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal)
+                        .textInputAutocapitalization(.never)
+                    
+                    Text("")
+                    Button(action: {
+                        for i in 0..<Owner.owners.count {
+                            if userName == Owner.owners[i].email.lowercased() && password == Owner.owners[i].password {
+                                nextView = true
+                            }
+                            else {
+                                withAnimation(.easeInOut(duration: wiggleDuration / 2)) {
+                                    loginAngle = wiggleAngle
+                                }
+                                withAnimation(.easeInOut(duration: wiggleDuration).delay(wiggleDuration / 2)) {
+                                    loginAngle = -wiggleAngle
+                                }
+                                withAnimation(.easeInOut(duration: wiggleDuration).delay(3 * wiggleDuration / 2)) {
+                                    loginAngle = wiggleAngle
+                                }
+                                withAnimation(.easeInOut(duration: wiggleDuration).delay(5 * wiggleDuration / 2)) {
+                                    loginAngle = -wiggleAngle
+                                }
+                                withAnimation(.easeInOut(duration: wiggleDuration).delay(7 * wiggleDuration / 2)) {
+                                    loginAngle = 0
+                                }
+                            }
+                        }
+                    }) {
+                        Text("Login")
+                            .frame(maxWidth: .infinity)
+                            .background(.black, in: RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)))
+                            .foregroundStyle(LinearGradient(colors: [.blue, .red], startPoint: .leading, endPoint: .trailing))
+                            .fontWidth(.expanded)
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
+                            .font(.title)
+                            .padding(.horizontal)
+                            .rotationEffect(.degrees(Double(loginAngle)))
+                    }
+                    .disabled(userName.count == 0 || password.count == 0)
+                    .opacity(userName.count == 0 || password.count == 0 ? 0.5 : 1)
+                    .animation(.smooth, value: userName.count == 0 || password.count == 0)
                 }
-                
-                let distributor = Owner(role: "Distributor", email: email, password: password, machines: machines)
-                owners.append(distributor)
-                owners2.append(distributor)
-            }
-            
-            for i in 1...4 {
-                let email = "regionalManager\(i)@gmail.com"
-                let password = "regionalManager\(i)Password"
-                var machines = [Machine]()
-                
-                for j in 1...5 {
-                    machines += owners.remove(at: 0).machines
+                .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
+                .preferredColorScheme(.dark)
+                .background(LinearGradient(colors: [loginBackgroundColor, loginBackgroundColor], startPoint: .top, endPoint: .bottom)
+                    .hueRotation(.degrees(Double(loginBackgroundColorAngle))))
+                .ignoresSafeArea()
+                .navigationDestination(isPresented: $nextView) {
+                    RemoteControlView()
                 }
-                
-                let regionalManager = Owner(role: "regionalManager", email: email, password: password, machines: machines)
-                owners.append(regionalManager)
-                owners2.append(regionalManager)
-            }
+                .onAppear {
+                    
+                    var owners = [Owner]()
+                    var owners2 = [Owner]()
+                    
+                    for i in 1...100 {
+                        let model = Machine.models[Int.random(in: 0...Machine.models.count - 1)]
+                        let serialNumber = String(Int.random(in: 1000000000...9999999999))
+                        
+                        let machine = Machine(model: model, serialNumber: serialNumber)
+                        
+                        let email = "farmer\(i)@gmail.com"
+                        let password = "farmer\(i)Password"
+                        let machines = [machine]
+                        
+                        let farmer = Owner(role: "Farmer", email: email, password: password, machines: machines)
+                        owners.append(farmer)
+                        owners2.append(farmer)
+                    }
+                    
+                    for i in 1...20 {
+                        let email = "distributor\(i)@gmail.com"
+                        let password = "distributor\(i)Password"
+                        var machines = [Machine]()
+                        
+                        for _ in 1...5 {
+                            machines += owners.remove(at: 0).machines
+                        }
+                        
+                        let distributor = Owner(role: "Distributor", email: email, password: password, machines: machines)
+                        owners.append(distributor)
+                        owners2.append(distributor)
+                    }
+                    
+                    for i in 1...4 {
+                        let email = "regionalManager\(i)@gmail.com"
+                        let password = "regionalManager\(i)Password"
+                        var machines = [Machine]()
+                        
+                        for _ in 1...5 {
+                            machines += owners.remove(at: 0).machines
+                        }
+                        
+                        let regionalManager = Owner(role: "regionalManager", email: email, password: password, machines: machines)
+                        owners.append(regionalManager)
+                        owners2.append(regionalManager)
+                    }
+                    
+                    for i in 1...4 {
+                        let email = "owner\(i)@gmail.com"
+                        let password = "owner\(i)Password"
+                        var machines = [Machine]()
+                        
+                        for j in 0...3 {
+                            machines += owners[j].machines
+                        }
+                        
+                        let owner = Owner(role: "Owner", email: email, password: password, machines: machines)
+                        owners.append(owner)
+                        owners2.append(owner)
+                    }
+                    
+                    Owner.owners = owners2
             
-            for i in 1...4 {
-                let email = "owner\(i)@gmail.com"
-                let password = "owner\(i)Password"
-                var machines = [Machine]()
-                
-                for j in 0...3 {
-                    machines += owners[j].machines
+                    withAnimation(.linear(duration: 60).repeatForever()) {
+                        loginBackgroundColorAngle = 360
+                    }
                 }
-                
-                let owner = Owner(role: "Owner", email: email, password: password, machines: machines)
-                owners.append(owner)
-                owners2.append(owner)
             }
-            
-            Owner.owners = owners2
-        }
     }
 }
 
@@ -270,7 +340,7 @@ struct RemoteControlView: View {
                         .foregroundStyle(lightMode ? .black : .white)
                         .allowsHitTesting(buttonEngaged)
                         .opacity(buttonEngaged ? 1 : 0.5)
-                        
+                            
                             
                             Text("First Slider Value: \(slider1, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
@@ -290,12 +360,12 @@ struct RemoteControlView: View {
                         .foregroundStyle(lightMode ? .black : .white)
                         .allowsHitTesting(buttonEngaged)
                         .opacity(buttonEngaged ? 1 : 0.5)
-
+                            
                             
                             Text("Second Slider Value: \(slider2, specifier: "%.2f")")
                                 .foregroundStyle(lightMode ? .black : .white)
                                 .opacity(buttonEngaged ? 1 : 0.5)
-                                
+                            
                             
                             Slider(value: $slider3, in: 0.25...1.6, step: 0.01) {
                                 Text("Third Slider")
@@ -676,14 +746,14 @@ struct RemoteControlView: View {
         .background(LinearGradient(colors: [color2, color1], startPoint: .top, endPoint: .bottom)
             .animation(.smooth, value : color1)
             .animation(.smooth, value : color2))
-//            .frame(width: ((UIWindow.current?.screen.bounds.height)!) * 1.25, height: ((UIWindow.current?.screen.bounds.height)!) * 1.25)
-//            .rotationEffect(.degrees(Double(rotationAngle2)))
+        //            .frame(width: ((UIWindow.current?.screen.bounds.height)!) * 1.25, height: ((UIWindow.current?.screen.bounds.height)!) * 1.25)
+        //            .rotationEffect(.degrees(Double(rotationAngle2)))
         
-//        .onAppear {
-//            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
-//                rotationAngle2 = 360
-//            }
-//        }
+        //        .onAppear {
+        //            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
+        //                rotationAngle2 = 360
+        //            }
+        //        }
         
         .navigationBarBackButtonHidden()
         .allowsHitTesting(!inAnimation)
