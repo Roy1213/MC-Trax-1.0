@@ -42,7 +42,6 @@ struct Machine {
         self.partNumber = partNumber
     }
 }
-
 struct Owner {
     static var owners = [Owner]()
     
@@ -75,14 +74,24 @@ struct Data: Identifiable {
 }
 
 struct ContentView : View {
+    @State private var userName = ""
+    @State private var password = ""
+    
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Hello world")
+                
+                TextField("Enter user name (email address)", text: $userName)
+                    .multilineTextAlignment(.center)
+                    
+                
+                SecureField("Enter password", text: $password)
+                    .multilineTextAlignment(.center)
+                
                 NavigationLink("Testing", destination: RemoteControlView())
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
         .onAppear {
             
             var owners = [Owner]()
