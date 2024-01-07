@@ -25,66 +25,39 @@ extension UIScreen {
     }
 }
 
-var logins = [String : String]()
-
 struct Machine {
-    var productName : String
+    
+    static let models = ["ECO",
+                         "MODULAR TOWER",
+                         "COMMERCIAL TOWER",
+                         "LEGACY",
+                         "DELTA",
+                         "FUSION"]
+    
+    var model : String
     var partNumber : String
     
-    init(productName: String, partNumber: String) {
-        self.productName = productName
+    init(model: String, partNumber: String) {
+        self.model = model
         self.partNumber = partNumber
     }
 }
-struct Farmer {
+
+struct Owner {
+    static var owners = [Owner]()
+    
+    var role : String
     var email : String
     var password : String
     var machines : [Machine]
     
-    init(email: String, password: String, machines: [Machine]) {
+    public var description: String { return "\nRole: \(role)\nEmail : \(email)\nPassword: \(password)\nMachines: \(machines)"}
+    
+    init(role: String, email: String, password: String, machines: [Machine]) {
+        self.role = role
         self.email = email
         self.password = password
         self.machines = machines
-    }
-    
-}
-struct Distributor {
-    var email : String
-    var password : String
-    var farmers : [Farmer]
-    var unsoldMachines : [Machine]
-    
-    init(email: String, password: String, farmers: [Farmer], unsoldMachines: [Machine]) {
-        self.email = email
-        self.password = password
-        self.farmers = farmers
-        self.unsoldMachines = unsoldMachines
-    }
-}
-struct RegionalManager {
-    var email : String
-    var password : String
-    var distributors : [Distributor]
-    var unsoldMachines : [Machine]
-    
-    init(email: String, password: String, distributors: [Distributor], unsoldMachines: [Machine]) {
-        self.email = email
-        self.password = password
-        self.distributors = distributors
-        self.unsoldMachines = unsoldMachines
-    }
-}
-struct Owner {
-    var email : String
-    var password : String
-    var regionalManagers : [RegionalManager]
-    var unsoldMachines : [Machine]
-    
-    init(email: String, password: String, regionalManagers: [RegionalManager], unsoldMachines: [Machine]) {
-        self.email = email
-        self.password = password
-        self.regionalManagers = regionalManagers
-        self.unsoldMachines = unsoldMachines
     }
 }
 
@@ -111,44 +84,67 @@ struct ContentView : View {
         }
         .preferredColorScheme(.dark)
         .onAppear {
-            var machineCount = 0
-            var farmerCount = 0
-            var distributorCount = 0
-            var regionalManagerCount = 0
-            var ownerCount = 0
             
-            for i in 1...1 {
-                ownerCount += 1
-                var ownerEmail = "owner\(ownerCount)@gmail.com"
-                var ownerPassword = "owner\(ownerCount)Password"
-                logins[ownerEmail] = ownerPassword
+            var owners = [Owner]()
+            var owners2 = [Owner]()
+            
+            for i in 1...100 {
+                let model = Machine.models[Int.random(in: 0...Machine.models.count - 1)]
+                let partNumber = String(Int.random(in: 1000000000...9999999999))
+                let machine = Machine(model: model, partNumber: partNumber)
                 
-                var ownerUnsoldMachines = [Machine]()
+                let email = "farmer\(i)@gmail.com"
+                let password = "farmer\(i)Password"
+                let machines = [machine]
                 
-                for j in 1...3 {
-                    machineCount += 1
-                    ownerUnsoldMachines.append(Machine(productName: "Model Name", partNumber: "\(machineCount)"))
-                }
-                
-                var regionalManagers = [RegionalManager]()
-                
-                for j in 1...3 {
-                    regionalManagerCount += 1
-                    var regionalManagerEmail = "regionaManager\(regionalManagerCount)@gmail.com"
-                    var regionalManagerPassword = "regionaManager\(regionalManagerCount)Password"
-                    logins[regionalManagerEmail] = regionalManagerPassword
-                    
-                    var regionalManagerUnsoldMachines = [Machine]()
-                    
-                    for j in 1...3 {
-                        machineCount += 1
-                        regionalManagerUnsoldMachines.append(Machine(productName: "Model Name", partNumber: "\(machineCount)"))
-                    }
-                    
-                    
-                    
-                }
+                let farmer = Owner(role: "Farmer", email: email, password: password, machines: machines)
+                owners.append(farmer)
+                owners2.append(farmer)
             }
+            
+            for i in 1...20 {
+                let email = "distributor\(i)@gmail.com"
+                let password = "distributor\(i)Password"
+                var machines = [Machine]()
+                
+                for j in 1...5 {
+                    machines += owners.remove(at: 0).machines
+                }
+                
+                let distributor = Owner(role: "Distributor", email: email, password: password, machines: machines)
+                owners.append(distributor)
+                owners2.append(distributor)
+            }
+            
+            for i in 1...4 {
+                let email = "regionalManager\(i)@gmail.com"
+                let password = "regionalManager\(i)Password"
+                var machines = [Machine]()
+                
+                for j in 1...5 {
+                    machines += owners.remove(at: 0).machines
+                }
+                
+                let regionalManager = Owner(role: "regionalManager", email: email, password: password, machines: machines)
+                owners.append(regionalManager)
+                owners2.append(regionalManager)
+            }
+            
+            for i in 1...4 {
+                let email = "owner\(i)@gmail.com"
+                let password = "owner\(i)Password"
+                var machines = [Machine]()
+                
+                for j in 0...3 {
+                    machines += owners[j].machines
+                }
+                
+                let owner = Owner(role: "Owner", email: email, password: password, machines: machines)
+                owners.append(owner)
+                owners2.append(owner)
+            }
+            
+            Owner.owners = owners2
         }
     }
 }
