@@ -25,6 +25,69 @@ extension UIScreen {
     }
 }
 
+var logins = [String : String]()
+
+struct Machine {
+    var productName : String
+    var partNumber : String
+    
+    init(productName: String, partNumber: String) {
+        self.productName = productName
+        self.partNumber = partNumber
+    }
+}
+struct Farmer {
+    var email : String
+    var password : String
+    var machines : [Machine]
+    
+    init(email: String, password: String, machines: [Machine]) {
+        self.email = email
+        self.password = password
+        self.machines = machines
+    }
+    
+}
+struct Distributor {
+    var email : String
+    var password : String
+    var farmers : [Farmer]
+    var unsoldMachines : [Machine]
+    
+    init(email: String, password: String, farmers: [Farmer], unsoldMachines: [Machine]) {
+        self.email = email
+        self.password = password
+        self.farmers = farmers
+        self.unsoldMachines = unsoldMachines
+    }
+}
+struct RegionalManager {
+    var email : String
+    var password : String
+    var distributors : [Distributor]
+    var unsoldMachines : [Machine]
+    
+    init(email: String, password: String, distributors: [Distributor], unsoldMachines: [Machine]) {
+        self.email = email
+        self.password = password
+        self.distributors = distributors
+        self.unsoldMachines = unsoldMachines
+    }
+}
+struct Owner {
+    var email : String
+    var password : String
+    var regionalManagers : [RegionalManager]
+    var unsoldMachines : [Machine]
+    
+    init(email: String, password: String, regionalManagers: [RegionalManager], unsoldMachines: [Machine]) {
+        self.email = email
+        self.password = password
+        self.regionalManagers = regionalManagers
+        self.unsoldMachines = unsoldMachines
+    }
+}
+
 struct Data: Identifiable {
     var id = UUID()
     var name : String
@@ -38,7 +101,6 @@ struct Data: Identifiable {
     }
 }
 
-
 struct ContentView : View {
     var body: some View {
         NavigationStack {
@@ -48,6 +110,46 @@ struct ContentView : View {
             }
         }
         .preferredColorScheme(.dark)
+        .onAppear {
+            var machineCount = 0
+            var farmerCount = 0
+            var distributorCount = 0
+            var regionalManagerCount = 0
+            var ownerCount = 0
+            
+            for i in 1...1 {
+                ownerCount += 1
+                var ownerEmail = "owner\(ownerCount)@gmail.com"
+                var ownerPassword = "owner\(ownerCount)Password"
+                logins[ownerEmail] = ownerPassword
+                
+                var ownerUnsoldMachines = [Machine]()
+                
+                for j in 1...3 {
+                    machineCount += 1
+                    ownerUnsoldMachines.append(Machine(productName: "Model Name", partNumber: "\(machineCount)"))
+                }
+                
+                var regionalManagers = [RegionalManager]()
+                
+                for j in 1...3 {
+                    regionalManagerCount += 1
+                    var regionalManagerEmail = "regionaManager\(regionalManagerCount)@gmail.com"
+                    var regionalManagerPassword = "regionaManager\(regionalManagerCount)Password"
+                    logins[regionalManagerEmail] = regionalManagerPassword
+                    
+                    var regionalManagerUnsoldMachines = [Machine]()
+                    
+                    for j in 1...3 {
+                        machineCount += 1
+                        regionalManagerUnsoldMachines.append(Machine(productName: "Model Name", partNumber: "\(machineCount)"))
+                    }
+                    
+                    
+                    
+                }
+            }
+        }
     }
 }
 
