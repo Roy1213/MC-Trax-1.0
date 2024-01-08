@@ -25,7 +25,8 @@ extension UIScreen {
     }
 }
 
-struct Machine {
+struct Machine : Identifiable {
+    var id = UUID()
     
     static let models = ["ECO",
                          "MODULAR TOWER",
@@ -42,7 +43,9 @@ struct Machine {
         self.serialNumber = serialNumber
     }
 }
-struct Owner {
+struct Owner : Identifiable {
+    var id = UUID()
+    
     static var owners = [Owner]()
     static var selectedIndex = -1
     
@@ -269,18 +272,25 @@ struct RemoteControlView: View {
     @State private var slider2           = 0.925
     @State private var slider3           = 0.925
     @State private var inAnimation       = false
+    
     //@State private var rotationAngle2    = 0
     //@State private var dynamicOn         = true
     @State private var timer             = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State var machines = [Machine]()
+    @State var selectedMachine = Machine(model: "Error", serialNumber: "Error")
     
     @Environment(\.dismiss) var dismiss
     
     
     var body: some View {
+        
+//        if machines.count == 1 {
+//            selectedMachine = machines[0]
+//        }
+        
         return ZStack(alignment: .top) {
             ScrollView {
                 Text("\n\n")
-                
                 VStack {
                     Button(action: {
                         withAnimation(.easeIn) {
@@ -288,7 +298,7 @@ struct RemoteControlView: View {
                         }
                     })
                     {
-                        Text("Selected Machine: ")
+                        Text("Selected Machine: \(selectedMachine.serialNumber)")
                             .bold()
                             .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight: ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
@@ -301,16 +311,30 @@ struct RemoteControlView: View {
                     
                     VStack {
                         ScrollView {
-                            Button("Are You Sure?", action: {dismiss()})
+                            ForEach(machines) { machine in
+                                Button(action: {
+                                    selectedMachine = machine
+                                })
+                                {
+                                    Text("\(machine.serialNumber)")
+                                        .bold()
+                                        .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight: ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                                        .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
+                                        .foregroundStyle(lightMode ? .black : .white)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
                         }
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded6 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded6 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
                 .padding(.horizontal)
+                .disabled(machines.count == 1)
+                .animation(.smooth, value: selectedMachine.serialNumber)
                 
                 VStack {
                     Button(action: {
@@ -424,12 +448,6 @@ struct RemoteControlView: View {
                                 .foregroundStyle(lightMode ? .black : .white)
                                 .opacity(buttonEngaged ? 1 : 0.5)
                             
-                            
-                            
-                            
-                            
-                            
-                            
                         }
                         .padding()
                         .scrollIndicators(.hidden)
@@ -439,6 +457,8 @@ struct RemoteControlView: View {
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
                 .padding(.horizontal)
+                .disabled(selectedMachine.serialNumber == "No Selection")
+                .animation(.smooth, value: selectedMachine.serialNumber == "No Selection")
                 
                 VStack{
                     Button(action: {
@@ -646,6 +666,8 @@ struct RemoteControlView: View {
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
                 .padding(.horizontal)
+                .disabled(selectedMachine.serialNumber == "No Selection")
+                .animation(.smooth, value: selectedMachine.serialNumber == "No Selection")
                 
                 VStack {
                     Button(action: {
@@ -667,10 +689,12 @@ struct RemoteControlView: View {
                     
                     VStack {
                         ScrollView {
-                            Text("Part Number: 123456789")
+                            Text("Serial Number: \(selectedMachine.serialNumber) SERIES")
                                 .foregroundStyle(lightMode ? .black : .white)
-                            Text("Product Name: Fusion Series")
+                                .frame(maxWidth: .infinity)
+                            Text("Product Name: \(selectedMachine.model)")
                                 .foregroundStyle(lightMode ? .black : .white)
+                                .frame(maxWidth: .infinity)
                             Text("")
                             Link("\nMathews Company Phone Number\n(815) 459-2210", destination: URL(string: "tel:8154592210")!)
                             Link("\nMathews Company Website\n(Click Here For More Info)", destination: URL(string: "https://www.mathewscompany.com/contact-us.html")!)
@@ -679,11 +703,14 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.325) : 0)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
                 .padding(.horizontal)
+                .disabled(selectedMachine.serialNumber == "No Selection")
+                .animation(.smooth, value: selectedMachine.serialNumber == "No Selection")
+                .animation(.smooth, value: selectedMachine.serialNumber)
                 
                 VStack {
                     Button(action: {
@@ -735,7 +762,7 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.25) : 0)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -766,7 +793,7 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
@@ -799,6 +826,10 @@ struct RemoteControlView: View {
         
         .navigationBarBackButtonHidden()
         .allowsHitTesting(!inAnimation)
+        .onAppear {
+            machines = Owner.owners[Owner.selectedIndex].machines
+            selectedMachine = machines.count == 1 ? machines[0] : Machine(model: "N/A", serialNumber: "No Selection")
+        }
         
         
         
