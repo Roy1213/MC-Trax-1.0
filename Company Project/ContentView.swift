@@ -44,6 +44,7 @@ struct Machine {
 }
 struct Owner {
     static var owners = [Owner]()
+    static var selectedIndex = -1
     
     var role : String
     var email : String
@@ -114,7 +115,9 @@ struct ContentView : View {
                     for i in 0..<Owner.owners.count {
                         if userName == Owner.owners[i].email.lowercased() && password == Owner.owners[i].password {
                             found = true
+                            Owner.selectedIndex = i
                             nextView = true
+                            break
                         }
                     }
                     if !found {
@@ -240,7 +243,7 @@ struct RemoteControlView: View {
     
     @State private var chartDomain       = 25
     @State private var chartRange        = 10
-    @State private var heightMultiplier  = 0.45
+    @State private var heightMultiplier  = 0.4
     @State private var developerMode     = false
     @State private var paused            = false
     @State private var buttonEngaged     = false
@@ -255,6 +258,7 @@ struct RemoteControlView: View {
     @State private var expanded3         = false
     @State private var expanded4         = false
     @State private var expanded5         = false
+    @State private var expanded6         = false
     @State private var rotationAngle     = -30
     @State private var scalingEffect     = 0.7
     @State private var color1Pick        = Color.blue
@@ -276,6 +280,38 @@ struct RemoteControlView: View {
         return ZStack(alignment: .top) {
             ScrollView {
                 Text("\n\n")
+                
+                VStack {
+                    Button(action: {
+                        withAnimation(.easeIn) {
+                            expanded6 = !expanded6
+                        }
+                    })
+                    {
+                        Text("Selected Machine: ")
+                            .bold()
+                            .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight: ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
+                            .foregroundStyle(lightMode ? .black : .white)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    //.disabled(inAnimation)
+                    
+                    
+                    
+                    VStack {
+                        ScrollView {
+                            Button("Are You Sure?", action: {dismiss()})
+                        }
+                        .padding()
+                        .scrollIndicators(.hidden)
+                    }
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded6 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
+                    .clipShape(Rectangle())
+                }
+                .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                .padding(.horizontal)
+                
                 VStack {
                     Button(action: {
                         withAnimation(.easeIn) {
