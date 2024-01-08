@@ -84,147 +84,151 @@ struct ContentView : View {
     @State private var wiggleAngle = 2.5
     
     var body: some View {
-            NavigationStack {
-                VStack {
-                    Text("Mathews Company")
-                        .font(.largeTitle)
-                        .foregroundStyle(.white)
-                        .fontWeight(.black)
-                    Text("Monitoring and Remote Control\n")
+        NavigationStack {
+            VStack {
+                Text("Mathews Company")
+                    .font(.largeTitle)
+                    .foregroundStyle(.white)
+                    .fontWeight(.black)
+                Text("Monitoring and Remote Control\n")
+                    .fontWidth(.expanded)
+                    .foregroundStyle(.white)
+                
+                TextField("Enter user name (email address)", text: $userName)
+                    .multilineTextAlignment(.center)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
+                    .textInputAutocapitalization(.never)
+                
+                SecureField("Enter password", text: $password)
+                    .multilineTextAlignment(.center)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
+                    .textInputAutocapitalization(.never)
+                
+                Text("")
+                Button(action: {
+                    var found = false
+                    for i in 0..<Owner.owners.count {
+                        if userName == Owner.owners[i].email.lowercased() && password == Owner.owners[i].password {
+                            found = true
+                            nextView = true
+                        }
+                    }
+                    if !found {
+                        
+                        withAnimation(.easeInOut(duration: wiggleDuration / 2)) {
+                            loginAngle = wiggleAngle
+                        }
+                        withAnimation(.easeInOut(duration: wiggleDuration).delay(wiggleDuration / 2)) {
+                            loginAngle = -wiggleAngle
+                        }
+                        withAnimation(.easeInOut(duration: wiggleDuration).delay(3 * wiggleDuration / 2)) {
+                            loginAngle = wiggleAngle
+                        }
+                        withAnimation(.easeInOut(duration: wiggleDuration).delay(5 * wiggleDuration / 2)) {
+                            loginAngle = -wiggleAngle
+                        }
+                        withAnimation(.easeInOut(duration: wiggleDuration).delay(7 * wiggleDuration / 2)) {
+                            loginAngle = 0
+                        }
+                        
+                    }
+                }) {
+                    Text("Login")
+                        .frame(maxWidth: .infinity)
+                        .background(.black, in: RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)))
+                        .foregroundStyle(LinearGradient(colors: [.blue, .red], startPoint: .leading, endPoint: .trailing))
                         .fontWidth(.expanded)
-                        .foregroundStyle(.white)
-                    
-                    TextField("Enter user name (email address)", text: $userName)
-                        .multilineTextAlignment(.center)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: .infinity)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
+                        .font(.title)
                         .padding(.horizontal)
-                        .textInputAutocapitalization(.never)
-                    
-                    SecureField("Enter password", text: $password)
-                        .multilineTextAlignment(.center)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal)
-                        .textInputAutocapitalization(.never)
-                    
-                    Text("")
-                    Button(action: {
-                        for i in 0..<Owner.owners.count {
-                            if userName == Owner.owners[i].email.lowercased() && password == Owner.owners[i].password {
-                                nextView = true
-                            }
-                            else {
-                                withAnimation(.easeInOut(duration: wiggleDuration / 2)) {
-                                    loginAngle = wiggleAngle
-                                }
-                                withAnimation(.easeInOut(duration: wiggleDuration).delay(wiggleDuration / 2)) {
-                                    loginAngle = -wiggleAngle
-                                }
-                                withAnimation(.easeInOut(duration: wiggleDuration).delay(3 * wiggleDuration / 2)) {
-                                    loginAngle = wiggleAngle
-                                }
-                                withAnimation(.easeInOut(duration: wiggleDuration).delay(5 * wiggleDuration / 2)) {
-                                    loginAngle = -wiggleAngle
-                                }
-                                withAnimation(.easeInOut(duration: wiggleDuration).delay(7 * wiggleDuration / 2)) {
-                                    loginAngle = 0
-                                }
-                            }
-                        }
-                    }) {
-                        Text("Login")
-                            .frame(maxWidth: .infinity)
-                            .background(.black, in: RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)))
-                            .foregroundStyle(LinearGradient(colors: [.blue, .red], startPoint: .leading, endPoint: .trailing))
-                            .fontWidth(.expanded)
-                            .fontWeight(.bold)
-                            .fontDesign(.rounded)
-                            .font(.title)
-                            .padding(.horizontal)
-                            .rotationEffect(.degrees(Double(loginAngle)))
-                    }
-                    .disabled(userName.count == 0 || password.count == 0)
-                    .opacity(userName.count == 0 || password.count == 0 ? 0.5 : 1)
-                    .animation(.smooth, value: userName.count == 0 || password.count == 0)
+                        .rotationEffect(.degrees(Double(loginAngle)))
                 }
-                .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
-                .preferredColorScheme(.dark)
-                .background(LinearGradient(colors: [loginBackgroundColor, loginBackgroundColor], startPoint: .top, endPoint: .bottom)
-                    .hueRotation(.degrees(Double(loginBackgroundColorAngle))))
-                .ignoresSafeArea()
-                .navigationDestination(isPresented: $nextView) {
-                    RemoteControlView()
+                .disabled(userName.count == 0 || password.count == 0)
+                .opacity(userName.count == 0 || password.count == 0 ? 0.5 : 1)
+                .animation(.smooth, value: userName.count == 0 || password.count == 0)
+            }
+            .frame(width: UIWindow.current?.screen.bounds.width, height: UIWindow.current?.screen.bounds.height)
+            .preferredColorScheme(.dark)
+            .background(LinearGradient(colors: [loginBackgroundColor, loginBackgroundColor], startPoint: .top, endPoint: .bottom)
+                .hueRotation(.degrees(Double(loginBackgroundColorAngle))))
+            .ignoresSafeArea()
+            .navigationDestination(isPresented: $nextView) {
+                RemoteControlView()
+            }
+            .onAppear {
+                
+                var owners = [Owner]()
+                var owners2 = [Owner]()
+                
+                for i in 1...100 {
+                    let model = Machine.models[Int.random(in: 0...Machine.models.count - 1)]
+                    let serialNumber = String(Int.random(in: 1000000000...9999999999))
+                    
+                    let machine = Machine(model: model, serialNumber: serialNumber)
+                    
+                    let email = "farmer\(i)@gmail.com"
+                    let password = "farmer\(i)Password"
+                    let machines = [machine]
+                    
+                    let farmer = Owner(role: "Farmer", email: email, password: password, machines: machines)
+                    owners.append(farmer)
+                    owners2.append(farmer)
                 }
-                .onAppear {
+                
+                for i in 1...20 {
+                    let email = "distributor\(i)@gmail.com"
+                    let password = "distributor\(i)Password"
+                    var machines = [Machine]()
                     
-                    var owners = [Owner]()
-                    var owners2 = [Owner]()
-                    
-                    for i in 1...100 {
-                        let model = Machine.models[Int.random(in: 0...Machine.models.count - 1)]
-                        let serialNumber = String(Int.random(in: 1000000000...9999999999))
-                        
-                        let machine = Machine(model: model, serialNumber: serialNumber)
-                        
-                        let email = "farmer\(i)@gmail.com"
-                        let password = "farmer\(i)Password"
-                        let machines = [machine]
-                        
-                        let farmer = Owner(role: "Farmer", email: email, password: password, machines: machines)
-                        owners.append(farmer)
-                        owners2.append(farmer)
+                    for _ in 1...5 {
+                        machines += owners.remove(at: 0).machines
                     }
                     
-                    for i in 1...20 {
-                        let email = "distributor\(i)@gmail.com"
-                        let password = "distributor\(i)Password"
-                        var machines = [Machine]()
-                        
-                        for _ in 1...5 {
-                            machines += owners.remove(at: 0).machines
-                        }
-                        
-                        let distributor = Owner(role: "Distributor", email: email, password: password, machines: machines)
-                        owners.append(distributor)
-                        owners2.append(distributor)
+                    let distributor = Owner(role: "Distributor", email: email, password: password, machines: machines)
+                    owners.append(distributor)
+                    owners2.append(distributor)
+                }
+                
+                for i in 1...4 {
+                    let email = "regionalManager\(i)@gmail.com"
+                    let password = "regionalManager\(i)Password"
+                    var machines = [Machine]()
+                    
+                    for _ in 1...5 {
+                        machines += owners.remove(at: 0).machines
                     }
                     
-                    for i in 1...4 {
-                        let email = "regionalManager\(i)@gmail.com"
-                        let password = "regionalManager\(i)Password"
-                        var machines = [Machine]()
-                        
-                        for _ in 1...5 {
-                            machines += owners.remove(at: 0).machines
-                        }
-                        
-                        let regionalManager = Owner(role: "regionalManager", email: email, password: password, machines: machines)
-                        owners.append(regionalManager)
-                        owners2.append(regionalManager)
+                    let regionalManager = Owner(role: "regionalManager", email: email, password: password, machines: machines)
+                    owners.append(regionalManager)
+                    owners2.append(regionalManager)
+                }
+                
+                for i in 1...4 {
+                    let email = "owner\(i)@gmail.com"
+                    let password = "owner\(i)Password"
+                    var machines = [Machine]()
+                    
+                    for j in 0...3 {
+                        machines += owners[j].machines
                     }
                     
-                    for i in 1...4 {
-                        let email = "owner\(i)@gmail.com"
-                        let password = "owner\(i)Password"
-                        var machines = [Machine]()
-                        
-                        for j in 0...3 {
-                            machines += owners[j].machines
-                        }
-                        
-                        let owner = Owner(role: "Owner", email: email, password: password, machines: machines)
-                        owners.append(owner)
-                        owners2.append(owner)
-                    }
-                    
-                    Owner.owners = owners2
-            
-                    withAnimation(.linear(duration: 60).repeatForever()) {
-                        loginBackgroundColorAngle = 360
-                    }
+                    let owner = Owner(role: "Owner", email: email, password: password, machines: machines)
+                    owners.append(owner)
+                    owners2.append(owner)
+                }
+                
+                Owner.owners = owners2
+                
+                withAnimation(.linear(duration: 60).repeatForever()) {
+                    loginBackgroundColorAngle = 360
                 }
             }
+        }
     }
 }
 
@@ -236,7 +240,7 @@ struct RemoteControlView: View {
     
     @State private var chartDomain       = 25
     @State private var chartRange        = 10
-    @State private var heightMultiplier  = 0.25
+    @State private var heightMultiplier  = 0.45
     @State private var developerMode     = false
     @State private var paused            = false
     @State private var buttonEngaged     = false
@@ -281,12 +285,11 @@ struct RemoteControlView: View {
                     {
                         Text("Controls")
                             .bold()
-                            .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                             .foregroundStyle(lightMode ? .black : .white)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    //.disabled(inAnimation)
                     
                     
                     
@@ -395,10 +398,11 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded2 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded2 ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                .padding(.horizontal)
                 
                 VStack{
                     Button(action: {
@@ -409,7 +413,7 @@ struct RemoteControlView: View {
                     {
                         Text("Charts")
                             .bold()
-                            .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                             .foregroundStyle(lightMode ? .black : .white)
                         
@@ -450,8 +454,7 @@ struct RemoteControlView: View {
                                             .foregroundStyle(.gray)
                                     }
                                 }
-                                //.frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
-                                
+                                .frame(minHeight: (UIWindow.current?.screen.bounds.height)! * heightMultiplier)
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -489,7 +492,7 @@ struct RemoteControlView: View {
                                     }
                                 }
                                 .foregroundStyle(Color(.green))
-                                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                .frame(minHeight: (UIWindow.current?.screen.bounds.height)! * heightMultiplier)
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -526,7 +529,7 @@ struct RemoteControlView: View {
                                     }
                                 }
                                 .foregroundStyle(Color(.red))
-                                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                .frame(minHeight: (UIWindow.current?.screen.bounds.height)! * heightMultiplier)
                             }
                             .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
@@ -589,9 +592,8 @@ struct RemoteControlView: View {
                                         }
                                     }
                                 }
-                                .frame(minHeight: (UIWindow.current?.screen.bounds.height ?? 250) * heightMultiplier)
+                                .frame(minHeight: (UIWindow.current?.screen.bounds.height)! * heightMultiplier)
                             }
-                            .containerRelativeFrame(.vertical)
                             .scrollTransition(axis: .vertical) {
                                 content, phase in
                                 content.rotation3DEffect(Angle(degrees: phase.value * Double(rotationAngle)), axis: (x : 1, y : 0, z : 0))
@@ -602,11 +604,12 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height: expanded ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded ? ((UIWindow.current?.screen.bounds.height)! * 0.5) : 0)
                     .clipShape(Rectangle())
                     .animation(.smooth, value: index)
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                .padding(.horizontal)
                 
                 VStack {
                     Button(action: {
@@ -618,7 +621,7 @@ struct RemoteControlView: View {
                         Text("Additional Information")
                             .foregroundStyle(lightMode ? .black : .white)
                             .bold()
-                            .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight: ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -640,10 +643,11 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.325) : 0)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded3 ? ((UIWindow.current?.screen.bounds.height)! * 0.325) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                .padding(.horizontal)
                 
                 VStack {
                     Button(action: {
@@ -654,7 +658,7 @@ struct RemoteControlView: View {
                     {
                         Text("Settings")
                             .bold()
-                            .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight: ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                             .foregroundStyle(lightMode ? .black : .white)
                     }
@@ -695,10 +699,11 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.25) : 0)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded4 ? ((UIWindow.current?.screen.bounds.height)! * 0.25) : 0)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                .padding(.horizontal)
                 
                 VStack {
                     Button(action: {
@@ -709,7 +714,7 @@ struct RemoteControlView: View {
                     {
                         Text("Back to Login")
                             .bold()
-                            .frame(width: ((UIWindow.current?.screen.bounds.width)! * 0.9), height:  ((UIWindow.current?.screen.bounds.height)! * 0.05))
+                            .frame(maxWidth: UIWindow.current?.screen.bounds.width, minHeight: ((UIWindow.current?.screen.bounds.height)! * 0.05))
                             .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(.gray))
                             .foregroundStyle(lightMode ? .black : .white)
                     }
@@ -725,10 +730,11 @@ struct RemoteControlView: View {
                         .padding()
                         .scrollIndicators(.hidden)
                     }
-                    .frame(maxWidth: ((UIWindow.current?.screen.bounds.width)! * 0.9), maxHeight: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
+                    .frame(maxWidth: UIWindow.current?.screen.bounds.width, maxHeight: expanded5 ? ((UIWindow.current?.screen.bounds.height)! * 0.075) : 0.01)
                     .clipShape(Rectangle())
                 }
                 .background(RoundedRectangle(cornerSize: CGSize(width: 20, height: 20)).fill(lightMode ? .white : .black))
+                .padding(.horizontal)
                 
                 Text("\n")
             }
